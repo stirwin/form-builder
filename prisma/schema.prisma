@@ -1,0 +1,44 @@
+// Este es tu archivo de esquema de Prisma,
+// aprende más sobre él en la documentación: https://pris.ly/d/prisma-schema
+
+// ¿Buscas maneras de acelerar tus consultas o escalar fácilmente con tus funciones sin servidor o en el borde?
+// Prueba Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// Generador para el cliente de Prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Fuente de datos para la base de datos PostgreSQL
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // usa conexión de agrupamiento (pooling)
+  directUrl = env("POSTGRES_URL_NON_POOLING") // usa una conexión directa
+}
+
+// Modelo para los formularios
+model Form {
+  id          Int      @id @default(autoincrement()) // Identificador único con autoincremento
+  userId      String // Identificador del usuario
+  createdAt   DateTime @default(now()) // Fecha de creación con valor por defecto del momento actual
+  published   Boolean  @default(false) // Indicador de si el formulario está publicado o no, por defecto false
+  name        String // Nombre del formulario
+  description String   @default("") // Descripción del formulario, por defecto una cadena vacía
+  content     String   @default("[]") // Contenido del formulario en formato JSON, por defecto un array vacío
+
+  visits      Int @default(0) // Número de visitas al formulario, por defecto 0
+  submissions Int @default(0) // Número de envíos del formulario, por defecto 0
+
+  shareURL        String            @default(uuid()) // URL para compartir el formulario, por defecto un UUID
+  FormSubmissions FormSubmissions[] // Relación uno a muchos con el modelo FormSubmissions
+}
+
+// Modelo para los envíos de formularios
+model FormSubmissions {
+  id        Int      @id @default(autoincrement()) // Identificador único con autoincremento
+  createdAt DateTime @default(now()) // Fecha de creación con valor por defecto del momento actual
+  formId    Int // Identificador del formulario relacionado
+  form      Form     @relation(fields: [formId], references: [id]) // Relación con el modelo Form
+
+  content String // Contenido del envío del formulario
+}
