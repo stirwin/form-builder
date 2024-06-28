@@ -1,32 +1,27 @@
-"use server"
+"use server";
 
 import prisma from "@/lib/prisma";
-import { currentUser } from "@clerk/nextjs/server";
-import { error } from "console";
 
-// Clase de error personalizada para cuando el usuario no se encuentra
+import { currentUser } from '@clerk/nextjs/server';
+import { formSchema, formSchemaType } from "../schemas/form";
+
 class UserNotFoundErr extends Error {}
 
-// Función asincrónica para obtener las estadísticas del formulario
 export async function GetFormStats() {
-    // Obtiene el usuario actual desde Clerk
-    const user = currentUser();
-    
-    // Si no hay un usuario actual, lanza un error
-    if (!user) {
-      throw new UserNotFoundErr();
-    }
-  
-    // Agrega la lógica para obtener las estadísticas del formulario desde la base de datos
-    const stats = await prisma.form.aggregate({
-      where: {
-        userId: user.id, // Filtra los formularios por el ID del usuario actual
-      },
-      _sum: {
-        visits: true,      // Suma el total de visitas
-        submissions: true, // Suma el total de envíos
-      }
-    });
+  const user = await currentUser();
+  if (!user) {
+    throw new UserNotFoundErr();
+  }
+
+  const stats = await prisma.form.aggregate({
+    where: {
+      userId: user.id,
+    },
+    _sum: {
+      visits: true,
+      submissions: true,
+    },
+  });
   
     // Obtiene el total de visitas y envíos, asignando 0 si no hay datos
     const visits = stats._sum.visits || 0;
@@ -48,6 +43,35 @@ export async function GetFormStats() {
       submissionRate, // Tasa de envíos (en porcentaje)
       bounceRate      // Tasa de rebote (en porcentaje)
     };
+  }
+
+
+  export async function CreateForm(data: formSchemaType) {
+    const validation = formSchema.safeParse(data);
+    if (!validation.success) {
+      throw new Error("form not valid");
+    }
+  
+    const user = await currentUser();
+    if (!user) {
+      throw new UserNotFoundErr();
+    }
+  
+    const { name, description } = data;
+  
+    const form = await prisma.form.create({
+      data: {
+        userId: user.id,
+        name,
+        description,
+      },
+    });
+  
+    if (!form) {
+      throw new Error("something went wrong");
+    }
+  
+    return form.id;
   }
   
 
