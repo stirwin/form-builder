@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 
 import { currentUser } from '@clerk/nextjs/server';
 import { formSchema, formSchemaType } from "../schemas/form";
+import { create } from "domain";
 
 class UserNotFoundErr extends Error {}
 
@@ -46,32 +47,59 @@ export async function GetFormStats() {
   }
 
 
-  export async function CreateForm(data: formSchemaType) {
-    const validation = formSchema.safeParse(data);
-    if (!validation.success) {
-      throw new Error("form not valid");
-    }
-  
-    const user = await currentUser();
-    if (!user) {
-      throw new UserNotFoundErr();
-    }
-  
-    const { name, description } = data;
-  
-    const form = await prisma.form.create({
-      data: {
-        userId: user.id,
-        name,
-        description,
-      },
-    });
-  
-    if (!form) {
-      throw new Error("something went wrong");
-    }
-  
-    return form.id;
+ 
+// Función asincrónica para crear un formulario
+export async function CreateForm(data: formSchemaType) {
+  // Validación de los datos del formulario utilizando el esquema de Zod
+  const validation = formSchema.safeParse(data);
+  if (!validation.success) {
+    throw new Error("form not valid"); // Lanza un error si la validación falla
   }
-  
+
+  // Obtiene el usuario actual desde Clerk
+  const user = await currentUser();
+  if (!user) {
+    throw new UserNotFoundErr(); // Lanza un error si no hay un usuario actual
+  }
+
+  // almacena el name y la descripcion
+  const { name, description } = data;
+
+  // Creación del formulario en la base de datos utilizando Prisma
+  const form = await prisma.form.create({
+    data: {
+      userId: user.id, // Asocia el formulario con el ID del usuario actual
+      name,           // Nombre del formulario
+      description,    // Descripción del formulario
+    },
+  });
+
+  // Verifica si la creación del formulario fue exitosa
+  if (!form) {
+    throw new Error("something went wrong"); // Lanza un error si algo salió mal
+  }
+
+  // Retorna el ID del formulario creado
+  return form.id;
+}
+
+
+// Función para obtener los formularios del usuario actual
+export async function GetForms() {
+  // Obtiene el usuario actual desde Clerk
+  const user = await currentUser();
+  if (!user) {
+    throw new UserNotFoundErr(); // Lanza un error si no hay un usuario actual
+  }
+
+  // Busca y retorna los formularios del usuario, ordenados por fecha de creación
+  return await prisma.form.findMany({
+    where: {
+      userId: user.id,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
 

@@ -31,6 +31,8 @@ model Form {
 
   shareURL        String            @default(uuid()) // URL para compartir el formulario, por defecto un UUID
   FormSubmissions FormSubmissions[] // Relación uno a muchos con el modelo FormSubmissions
+
+  @@unique([name,userId])
 }
 
 // Modelo para los envíos de formularios

@@ -16,14 +16,18 @@ import * as z from "zod"
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "../ui/textarea";
-import { Loader } from "lucide-react";
+import { ClipboardPlus, Loader } from "lucide-react";
 import { toast } from "../ui/use-toast";
 import { formSchema, formSchemaType } from "../../../schemas/form";
 import { CreateForm } from "../../../actions/form";
+import { useRouter } from "next/navigation";
 
   
   // Componente para crear un nuevo formulario
   function CreateFormBtn() {
+
+    const router = useRouter();
+
     // Inicializa el formulario con react-hook-form y zodResolver
     const form = useForm<formSchemaType>({
       resolver: zodResolver(formSchema),
@@ -37,7 +41,8 @@ import { CreateForm } from "../../../actions/form";
             title:"Success",
             description:"Formulario creado y completado"
         })
-        console.log("form id", formId);
+        //Envia a ruta para contruir el formulario 
+       router.push(`/builder/${formId}`)
         
       } catch (error) {
         // Muestra un mensaje de error si algo sale mal
@@ -53,7 +58,12 @@ import { CreateForm } from "../../../actions/form";
       <Dialog>
         {/* Botón que dispara el diálogo */}
         <DialogTrigger asChild>
-          <Button>Crear nuevo formulario</Button>
+          <Button variant={"outline"} className="group border border-primary/20 h-[190px]
+          items-center justify-center flex flex-col hover:border-primary
+          hover:cursor-pointer border-dashed gap-4 ">
+            <ClipboardPlus className=" text-muted-foreground group-hover:text-primary"/>
+            <p className="font-bold text-xl text-muted-foreground group-hover:text-primary"> Crear nuevo formulario</p>
+            </Button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>

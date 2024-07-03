@@ -1,11 +1,31 @@
-import Image from "next/image";
-import { GetFormStats } from "../../../actions/form";
-import { BookText, CirclePlus, MousePointerClick } from "lucide-react";
+
+import { GetFormStats, GetForms } from "../../../actions/form";
+import {
+  ArrowRight,
+  BookText,
+  CirclePlus,
+  ClipboardPen,
+  MousePointerClick,
+  SendHorizontal,
+  View,
+} from "lucide-react";
 import { ReactNode, Suspense } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import CreateFormBtn from "@/components/form/CreateFormBtn";
+import { Form } from "@prisma/client";
+import { Badge } from "@/components/ui/badge";
+import { formatDistance } from "date-fns";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 // Componente principal Home
 export default function Home() {
@@ -16,9 +36,18 @@ export default function Home() {
         <CardStatsWrapper />
       </Suspense>
       <Separator className="my-6" />
-        <h2 className="text-4xl font-bold col-span-2">Tus formularios</h2>
+      <h2 className="text-4xl font-bold col-span-2">Tus formularios</h2>
       <Separator className="my-6" />
-      <CreateFormBtn/>
+      <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <CreateFormBtn />
+        <Suspense
+          fallback={[1, 2, 3, 4].map((el) => (
+            <FormCardSkeleton key={el} />
+          ))}
+        >
+          <FormCards />
+        </Suspense>
+      </div>
     </div>
   );
 }
@@ -116,6 +145,72 @@ function StatsCard({
         </div>
         <p className="text-xs text-muted-foreground pt-1">{helperText}</p>
       </CardContent>
+    </Card>
+  );
+}
+
+// Componente Skeleton para la carga de los formularios
+function FormCardSkeleton() {
+  return <Skeleton className="border-2 border-primary-/20 h-[198px] w-full" />;
+}
+
+// Función asincrónica para obtener los formularios del usuario y renderizar los componentes de las tarjetas de formularios
+async function FormCards() {
+  const form = await GetForms();
+  return (
+    <>
+      {form.map((form) => (
+        <FormCard key={form.id} form={form} />
+      ))}
+    </>
+  );
+}
+
+// Componente individual para cada tarjeta de formulario
+function FormCard({ form }: { form: Form }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 justify-between">
+          <span className="truncate font-bold">{form.name}</span>
+          {form.published && <Badge>Publicado</Badge>}
+          {!form.published && <Badge variant={"destructive"}>Borrador</Badge>}
+        </CardTitle>
+        <CardDescription className="flex items-center justify-between text-muted-foreground text-sm">
+          {formatDistance(form.createdAt, new Date(), {
+            addSuffix: true,
+          })}
+
+          {form.published && (
+            <span className="flex items-center gap-2 text-sm">
+              <View className="text-muted-foreground h-5 w-5" />
+              <span>{form.visits.toLocaleString()}</span>
+              <SendHorizontal className="text-muted-foreground h-5 w-5" />
+              <span>{form.submissions.toLocaleString()}</span>
+            </span>
+          )}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="h-[20px] truncate text-sm text-muted-foreground">
+        {form.description || "No hay descripción"}
+      </CardContent>
+      <CardFooter>
+        {form.published && (
+          <Button asChild className="w-full mt-2 text-md gap-4">
+            <Link href={`/builder/${form.id}`}>
+              Ver envíos <ArrowRight />
+            </Link>
+          </Button>
+        )}
+
+        {!form.published && (
+          <Button asChild className="w-full mt-2 text-md gap-4">
+            <Link href={`/forms/${form.id}`}>
+              Editar formulario  <ClipboardPen />
+            </Link>
+          </Button>
+        )}
+      </CardFooter>
     </Card>
   );
 }
