@@ -34,6 +34,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             {children}
+            {/*Envia una alerta*/}
             <Toaster/>
           </ThemeProvider>
       </body>
