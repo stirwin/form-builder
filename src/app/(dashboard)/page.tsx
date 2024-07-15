@@ -197,7 +197,7 @@ function FormCard({ form }: { form: Form }) {
       <CardFooter>
         {form.published && (
           <Button asChild className="w-full mt-2 text-md gap-4">
-            <Link href={`/builder/${form.id}`}>
+            <Link href={`/forms/${form.id}`}>
               Ver envíos <ArrowRight />
             </Link>
           </Button>
@@ -205,7 +205,7 @@ function FormCard({ form }: { form: Form }) {
 
         {!form.published && (
           <Button asChild className="w-full mt-2 text-md gap-4">
-            <Link href={`/forms/${form.id}`}>
+            <Link href={`/builder/${form.id}`}>
               Editar formulario  <ClipboardPen />
             </Link>
           </Button>

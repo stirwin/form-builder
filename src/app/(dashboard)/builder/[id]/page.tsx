@@ -1,12 +1,19 @@
-import { Loader } from 'lucide-react'
 import React from 'react'
+import { GetFormById } from '../../../../../actions/form';
+import Formbuilder from '@/components/form/Formbuilder';
 
-function Loading() {
+async function BuilderPage({params,}:{params:{id:string}}) {
+    const {id}=params;
+    const form = await GetFormById(Number(id));
+
+    if (!form) {
+        throw new Error('Form no encontrado');
+    }
   return (
-    <div className='flex items-center justify-center w-full h-full'>
-        <Loader className="animate-spin" />
+    <div>
+       <Formbuilder form={form}/>
     </div>
   )
 }
 
-export default Loading
+export default BuilderPage;
