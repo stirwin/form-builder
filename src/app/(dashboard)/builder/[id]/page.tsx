@@ -10,9 +10,9 @@ async function BuilderPage({params,}:{params:{id:string}}) {
         throw new Error('Form no encontrado');
     }
   return (
-    <div>
+   
        <Formbuilder form={form}/>
-    </div>
+ 
   )
 }
 
