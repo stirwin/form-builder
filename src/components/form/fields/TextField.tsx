@@ -1,7 +1,7 @@
 'use client'
 
 import { CaseSensitive } from "lucide-react"
-import { ElementsType, FormElement } from "../FormElemets"
+import { ElementsType, FormElement } from "../disingner/FormElemets"
 
 const type:ElementsType= "TextField"
 

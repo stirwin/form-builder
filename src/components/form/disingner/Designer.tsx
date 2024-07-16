@@ -1,7 +1,7 @@
 'use client'
 
 import DisignerSidebar from "./DisignerSidebar"
-import {useDroppable} from "@dnd-kit/core";
+import { useDroppable } from "@dnd-kit/core"
 
 function Designer() {
 
