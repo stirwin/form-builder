@@ -1,7 +1,7 @@
 'use client'
 
 import { CaseSensitive } from "lucide-react"
-import { ElementsType, FormElement } from "../disingner/FormElemets"
+import { ElementsType, FormElement } from "../FormElemets"
 
 const type:ElementsType= "TextField"
 
@@ -14,8 +14,8 @@ export const TextFieldFormElement:FormElement={
             label: "Text field",
             helperText:"Helper text",
             required: false,
-            placeHolder: "Value here..."
-        }
+            placeHolder: "Value here...",
+        },
     }),
     designerBtnElement: {
         icon: CaseSensitive,

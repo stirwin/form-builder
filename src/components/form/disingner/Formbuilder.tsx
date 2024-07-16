@@ -6,6 +6,7 @@ import SaveFormBtn from "./SaveFormBtn";
 import PublishFormBtn from "./PublishFormBtn";
 import Designer from "./Designer";
 import { DndContext } from "@dnd-kit/core";
+import DragOverlayWrapper from "./DragOverlayWrapper";
 
 function Formbuilder({ form }: { form: Form }) {
   return (
@@ -28,11 +29,12 @@ function Formbuilder({ form }: { form: Form }) {
         </nav>
         <div
           className="flex w-full flex-grow items-center justify-center
-      relative overflow-y-auto h-[200px] bg-accent bg-[url(/paper.svg)]  dark:bg-[url(/paper-dark.svg)]"
+            relative overflow-y-auto h-[200px] bg-accent bg-[url(/paper.svg)]  dark:bg-[url(/paper-dark.svg)]"
         >
           <Designer />
         </div>
       </main>
+      <DragOverlayWrapper />
     </DndContext>
   );
 }

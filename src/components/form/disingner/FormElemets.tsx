@@ -1,4 +1,4 @@
-import { TextFieldFormElement } from "../fields/TextField";
+import { TextFieldFormElement } from "./fields/TextField";
 
 export type ElementsType = "TextField";
 
@@ -8,7 +8,7 @@ export type FormElement = {
   construct: (id:string)=>FormElementInstance;
 
   designerBtnElement: {
-    icon: React.ReactElement;
+    icon: React.ElementType;
     label: string;
   };
 
