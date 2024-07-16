@@ -3,13 +3,14 @@ import {
   SignInButton,
   SignedIn,
   SignedOut,
-  UserButton
-} from '@clerk/nextjs'
+  UserButton,
+} from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from '@/components/providers/theme-provider';
-import { Toaster } from '@/components/ui/toaster';
+import { ThemeProvider } from "@/components/providers/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
+import DesignerContextProvider from "@/components/form/disingner/context/DisignerContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,20 +26,22 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-    <html lang="en">
-      <body className={inter.className}>
-      <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-            {/*Envia una alerta*/}
-            <Toaster/>
-          </ThemeProvider>
-      </body>
-    </html>
+      <html lang="en">
+        <body className={inter.className}>
+          <DesignerContextProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+              {/*Envia una alerta*/}
+              <Toaster />
+            </ThemeProvider>
+          </DesignerContextProvider>
+        </body>
+      </html>
     </ClerkProvider>
   );
 }

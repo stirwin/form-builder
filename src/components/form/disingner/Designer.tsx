@@ -2,18 +2,24 @@
 
 import { cn } from "@/lib/utils";
 import DisignerSidebar from "./DisignerSidebar";
-import { useDroppable } from "@dnd-kit/core";
+import { useDndMonitor, useDroppable } from "@dnd-kit/core";
 import { useState } from "react";
 import { FormElement, FormElementInstance } from "./FormElemets";
+import useDesinger from "../hooks/useDesinger";
 
 function Designer() {
 
-  const [elements, setElements]  = useState<FormElementInstance[]>([]);
+    const {elements, addElement}= useDesinger();
+  
   const droppable = useDroppable({
     id: "designer-drop-area",
     data: {
       isDesgnerDropArea: true,
     },
+  });
+
+  useDndMonitor({
+    onDragEnd: (event:DragEvent)=>{}
   });
 
   return (
