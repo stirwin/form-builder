@@ -4,7 +4,7 @@
 import React, { useContext } from 'react'
 import { DesignerContext } from '../disingner/context/DisignerContext'
 
-function useDesinger() {
+function useDesigner() {
   const context = useContext(DesignerContext);
 
   if (!context) {
@@ -15,4 +15,4 @@ function useDesinger() {
   return context;
 }
 
-export default useDesinger
+export default useDesigner

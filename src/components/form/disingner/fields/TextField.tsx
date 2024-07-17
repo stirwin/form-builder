@@ -1,28 +1,56 @@
 'use client'
 
 import { CaseSensitive } from "lucide-react"
-import { ElementsType, FormElement } from "../FormElemets"
+import { ElementsType, FormElement, FormElementInstance } from "../FormElemets"
+import Designer from "../Designer"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
 
-const type:ElementsType= "TextField"
+const type: ElementsType = "TextField"
 
-export const TextFieldFormElement:FormElement={
+const extraAttributes = {
+    label: "Campo de texto",
+    helperText: "Helper text",
+    required: false,
+    placeHolder: "Escriba aqui...",
+}
+
+
+export const TextFieldFormElement: FormElement = {
     type,
-    construct: (id: string)=>({
+    construct: (id: string) => ({
         id,
         type,
-        extraAtributes:{
-            label: "Text field",
-            helperText:"Helper text",
-            required: false,
-            placeHolder: "Value here...",
-        },
+        extraAttributes,
     }),
     designerBtnElement: {
         icon: CaseSensitive,
-        label:" Text Field",
+        label: " Campo de texto",
     },
 
-    desingerComponent: ()=> <div>Designer component</div>,
-    formComponent: ()=> <div>Form component</div>,
-    propertiesComponent: ()=> <div>Properties component</div>
+    desingerComponent: DesignerComponent,
+    formComponent: () => <div>Form component</div>,
+    propertiesComponent: () => <div>Properties component</div>
+}
+
+type CustomInstance = FormElementInstance & {
+    extraAttributes: typeof extraAttributes
+}
+
+function DesignerComponent({ elementInstance }: { elementInstance: FormElementInstance }) {
+
+    const element = elementInstance as CustomInstance;
+    const { label, helperText, required, placeHolder } = element.extraAttributes;
+    return (
+        <div className="flex flex-col gap-2 w-full">
+            <Label className="font-medium text-sm">
+                {element.extraAttributes.label}
+                {element.extraAttributes.required && "*"}
+            </Label>
+            <Input readOnly disabled placeholder={element.extraAttributes.placeHolder} />
+            {helperText && 
+            <p className="text-xs text-muted-foreground">{helperText}</p>
+            }
+
+        </div>)
 }
