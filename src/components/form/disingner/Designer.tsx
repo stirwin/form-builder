@@ -101,7 +101,7 @@ function Designer() {
  */
 function DesignerElementWrapper({ element }: { element: FormElementInstance }) {
   
-  const { removeElement } = useDesinger();
+  const { removeElement, selectedElement, setSelectedElement } = useDesinger();
   // Maneja el mouse sobre el elemento del diseño.
   const [mouseIsOver, setMouseIsOver] = useState<boolean>(false);
   
@@ -134,6 +134,8 @@ function DesignerElementWrapper({ element }: { element: FormElementInstance }) {
   // Si el elemento está arrastrando, no renderiza el componente del elemento.
   if (draggable.isDragging) return null;
 
+  console.log(selectedElement);
+  
   // Obtiene el componente del diseñador del elemento del diseño a partir del tipo de elemento.
   const DesignerElement = FormElements[element.type].desingerComponent;
 
@@ -148,6 +150,12 @@ function DesignerElementWrapper({ element }: { element: FormElementInstance }) {
      
       onMouseEnter={() => {setMouseIsOver(true);}}
       onMouseLeave={() => {setMouseIsOver(false);}}
+
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setSelectedElement(element);
+      }}
      >
 
       <div
@@ -164,7 +172,10 @@ function DesignerElementWrapper({ element }: { element: FormElementInstance }) {
             <Button 
             className="flex justify-center h-full broder rounded-md 
             rounded-l-none bg-red-500"
-            onClick={() => removeElement(element.id)}>
+            onClick={(e) =>{ 
+              e.stopPropagation();
+              e.preventDefault();
+              removeElement(element.id)}}>
             <Trash2 />
             </Button>
           </div>
