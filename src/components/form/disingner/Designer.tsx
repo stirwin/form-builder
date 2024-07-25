@@ -15,7 +15,7 @@ import { Trash2 } from "lucide-react";
 function Designer() {
 
   //agrega elementos en el desingner
-  const { elements, addElement, selectedElement, setSelectedElement } = useDesinger();
+  const { elements, addElement, selectedElement, setSelectedElement, removeElement } = useDesinger();
 
   const droppable = useDroppable({
     id: "designer-drop-area",
@@ -41,14 +41,83 @@ function Designer() {
       if (!active || !over) return;
 
       const isDesignerBtnElement = active.data.current?.isDesignerBtnElement;
+      const isDroppingOverDesignerDropArea = over.data?.current?.isDesignerDropArea;
+      
+      const droppingSidebarBtnOverDesignerDropArea =
+      isDesignerBtnElement && isDroppingOverDesignerDropArea;
+      //primer escenario
+      if (droppingSidebarBtnOverDesignerDropArea) {
+        const type = active.data.current?.type;
+        const newElement = FormElements[type as ElementsType].construct(
+          idGenerator()
+        );
+        
+        addElement(elements.length, newElement);
+        return;
+      }
 
-      if (isDesignerBtnElement) {
+      const isDroppingOverDesignerElementTopHalf= 
+      over.data?.current?.isTopHalfDesignerElement;
+
+      const isDroppingOverDesignerElementBottomHalf=
+       over.data?.current?.isBottomHalfDesignerElement;
+
+      const isDroppingOverDesignerElement= 
+      isDroppingOverDesignerElementTopHalf |
+      isDroppingOverDesignerElementBottomHalf;
+
+      const droppingSidebarBtnOverDesignerElement=
+      isDesignerBtnElement && isDroppingOverDesignerElement;
+
+      //segundo escenario
+      if (droppingSidebarBtnOverDesignerElement) {
         const type = active.data.current?.type;
         const newElement = FormElements[type as ElementsType].construct(
           idGenerator()
         );
 
-        addElement(0, newElement);
+        const overId = over.data?.current?.elementId;
+
+        const overElemetIndex= elements.findIndex((el)=>el.id === over.id);
+        if (overElemetIndex !== -1) {
+          throw new Error("Element not found");
+        }
+        
+        //agrega el nuevo elemento
+        let indexForNewElement = overElemetIndex; 
+        if (isDroppingOverDesignerElementBottomHalf) {
+          indexForNewElement = overElemetIndex + 1;
+        }
+        addElement(indexForNewElement, newElement);
+        return;
+      }
+
+      //tercer escenario
+      const isDraggingDesignerElement = active.data?.current?.isDesignerElement;
+
+      const draggingDesignerElementOverAnotherDesignerElement = 
+        isDroppingOverDesignerElement && !isDesignerBtnElement;
+
+      if (draggingDesignerElementOverAnotherDesignerElement) {
+        const activeId = active.data?.current?.elementId;
+        const overId = over.data?.current?.elementId;
+
+        const activeElemetIndex= elements.findIndex((el)=>el.id === activeId);
+        const overElemetIndex= elements.findIndex((el)=>el.id === overId);
+
+        if (activeElemetIndex === -1 || overElemetIndex === -1) {
+          throw new Error("Element not found");
+        }
+        
+        const activeElement ={...elements[activeElemetIndex]};
+        removeElement(activeId);
+
+        //agrega el nuevo elemento
+        let indexForNewElement = overElemetIndex; 
+        if (isDroppingOverDesignerElementBottomHalf) {
+          indexForNewElement = overElemetIndex + 1;
+        }
+        addElement(overElemetIndex, activeElement);
       }
     },
   });
