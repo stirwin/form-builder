@@ -46,7 +46,9 @@ export type FormElement = {
   //Un componente react para el UI de formulario.
   formComponent: React.FC;
   //Un componente react para el UI de propiedades.
-  propertiesComponent: React.FC;
+  propertiesComponent: React.FC<{
+    elementInstance: FormElementInstance;
+  }>;
 };
 
 /**
@@ -58,7 +60,7 @@ export type FormElement = {
 export type FormElementInstance = {
   id: string;
   type: ElementsType;
-  extraAtributes?: Record<string, any>;
+  extraAttributes?: Record<string, any>;
 }
 
 /**

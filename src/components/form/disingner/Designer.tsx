@@ -15,7 +15,7 @@ import { Trash2 } from "lucide-react";
 function Designer() {
 
   //agrega elementos en el desingner
-  const { elements, addElement } = useDesinger();
+  const { elements, addElement, selectedElement, setSelectedElement } = useDesinger();
 
   const droppable = useDroppable({
     id: "designer-drop-area",
@@ -55,7 +55,9 @@ function Designer() {
 
   return (
     <div className="flex w-full h-full">
-      <div className="p-4 w-full">
+      <div className="p-4 w-full" onClick={()=> {
+        if (selectedElement) setSelectedElement(null)
+      }}>
         <div
           ref={droppable.setNodeRef}
           // El contenedor principal del diseño
@@ -174,7 +176,6 @@ function DesignerElementWrapper({ element }: { element: FormElementInstance }) {
             rounded-l-none bg-red-500"
             onClick={(e) =>{ 
               e.stopPropagation();
-              e.preventDefault();
               removeElement(element.id)}}>
             <Trash2 />
             </Button>
