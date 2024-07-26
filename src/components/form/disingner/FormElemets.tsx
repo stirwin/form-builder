@@ -44,7 +44,9 @@ export type FormElement = {
     elementInstance: FormElementInstance;
   }>;
   //Un componente react para el UI de formulario.
-  formComponent: React.FC;
+  formComponent: React.FC<{
+    elementInstance: FormElementInstance;
+  }>;
   //Un componente react para el UI de propiedades.
   propertiesComponent: React.FC<{
     elementInstance: FormElementInstance;
@@ -61,7 +63,7 @@ export type FormElementInstance = {
   id: string;
   type: ElementsType;
   extraAttributes?: Record<string, any>;
-}
+};
 
 /**
  * Tipo para un mapping de tipos de elementos de formulario a elementos de formulario.
@@ -76,4 +78,3 @@ type FormElementsType = {
 export const FormElements: FormElementsType = {
   TextField: TextFieldFormElement,
 };
-

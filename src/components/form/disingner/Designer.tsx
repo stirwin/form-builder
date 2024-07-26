@@ -117,7 +117,7 @@ function Designer() {
         if (isDroppingOverDesignerElementBottomHalf) {
           indexForNewElement = overElemetIndex + 1;
         }
-        addElement(overElemetIndex, activeElement);
+        addElement(indexForNewElement, activeElement);
       }
     },
   });
