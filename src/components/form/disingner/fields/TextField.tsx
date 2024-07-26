@@ -236,8 +236,7 @@ function FormComponent({
           {element.extraAttributes.required && "*"}
         </Label>
         <Input
-          readOnly
-          disabled
+         
           placeholder={element.extraAttributes.placeHolder}
         />
         {helperText && (
