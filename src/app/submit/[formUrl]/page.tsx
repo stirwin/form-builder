@@ -13,9 +13,8 @@ async function SubmitPage({params}: {params: {formUrl: string}}) {
     const formContent = JSON.parse(form.content) as FormElementInstance[];
   
     return (
-    <div>
      <FormSubmitComponent formUrl={params.formUrl} content={formContent} />
-    </div>
+ 
   )
 }
 
