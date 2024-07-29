@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 function PublishFormBtn({id}: {id: number}) {
   const [loading, setTransiton] = useTransition();
   const router = useRouter();
+  
   async function publishForm  () {
     try {
       await PublishForm(id);
