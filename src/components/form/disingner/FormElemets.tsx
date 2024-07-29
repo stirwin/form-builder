@@ -6,6 +6,10 @@ import { TextFieldFormElement } from "./fields/TextField";
 //Tipo de elementos de formulario disponibles.
 export type ElementsType = "TextField";
 
+export type submitFunction = (key: string, value: string) => void;
+
+
+
 /**
  * Tipo para un elemento de formulario.
  *
@@ -46,11 +50,17 @@ export type FormElement = {
   //Un componente react para el UI de formulario.
   formComponent: React.FC<{
     elementInstance: FormElementInstance;
+    submitValue: submitFunction;
+    isInvalid?:boolean;
+    defaultValue?:string
   }>;
   //Un componente react para el UI de propiedades.
   propertiesComponent: React.FC<{
     elementInstance: FormElementInstance;
   }>;
+
+
+  validate: (FormElement: FormElementInstance, currentValue: string) => boolean;
 };
 
 /**
