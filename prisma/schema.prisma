@@ -29,7 +29,7 @@ model Form {
   visits      Int @default(0) // Número de visitas al formulario, por defecto 0
   submissions Int @default(0) // Número de envíos del formulario, por defecto 0
 
-  shareURL        String            @default(uuid()) // URL para compartir el formulario, por defecto un UUID
+  shareURL        String           @unique @default(uuid())  // URL para compartir el formulario, por defecto un UUID
   FormSubmissions FormSubmissions[] // Relación uno a muchos con el modelo FormSubmissions
 
   @@unique([name,userId])

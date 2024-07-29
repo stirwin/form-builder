@@ -14,9 +14,12 @@ import {
 } from "@dnd-kit/core";
 import DragOverlayWrapper from "./DragOverlayWrapper";
 import useDesigner from "../hooks/useDesigner";
-import { Loader } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader } from "lucide-react";
 import { Input } from "@/components/ui/input";
-
+import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/use-toast";
+import Link from "next/link";
+import Confetti from 'react-confetti'
 function Formbuilder({ form }: { form: Form }) {
   const { setElements } = useDesigner();
   const [isReady, setIsReady] = useState(false);
@@ -57,6 +60,11 @@ function Formbuilder({ form }: { form: Form }) {
   if (form.published) {
     return (
       <>
+      <Confetti 
+      width={window.innerWidth} 
+      height={window.innerHeight}
+      recycle={false}
+      numberOfPieces={1000}/>
         <div className="flex flex-col items-center justify-center w-full h-full">
           <div className="mx-w-md">
           <h1
@@ -65,13 +73,40 @@ function Formbuilder({ form }: { form: Form }) {
           >
             Formulario publicado
           </h1>
-          <h2 className=" text-xl text-muted-foreground border-b pb-10">
-            cualquiera puede ver este formulario
+          <h2 className=" text-2xl text-muted-foreground font-bold">
+           Compartir este  formulario
           </h2>
+          <h3 className="text-xl text-muted-foreground border-b pb-10">
+          cualquiera que tenga el link puede ver y enviar el formulario
+          </h3>
           <div
             className="my-4 flex flex-col gap-2 items-center w-full border-b pb-4"
           >
             <Input className="w-full" readOnly value={shareUrl}/>
+            <Button className="w-full mt-2 " onClick={() => {
+              navigator.clipboard.writeText(shareUrl)
+              toast({
+                title: "Copiado",
+                description: "El link fue copiado"
+              })
+              }}>
+              Copiar
+            </Button>
+          </div>
+          <div className="flex justify-between">
+            <Button variant={"link"} asChild>
+              <Link href={"/"} className="gap-2">
+              <ArrowLeft />
+              Ir al inicio
+              </Link>
+            </Button>
+            <Button variant={"link"} asChild>
+              <Link href={`/forms/${form.id}`} className="gap-2">
+               Detalles del formulario
+               <ArrowRight/>
+             
+              </Link>
+            </Button>
           </div>
           </div>
         </div>

@@ -111,7 +111,7 @@ function StatsCards(props: StatsCardProps) {
 }
 
 // Componente individual para cada tarjeta de estadísticas
-function StatsCard({
+export function StatsCard({
   title,
   value,
   icon,
