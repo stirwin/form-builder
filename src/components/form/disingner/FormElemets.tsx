@@ -2,13 +2,18 @@
  * Este módulo define los diferentes elementos de formulario disponibles para el diseñador.
  */
 
+import { ParagraphFieldFormElement } from "./fields/ParagraphField";
+import { SubTitleFieldFormElement } from "./fields/SubTitleField";
 import { TextFieldFormElement } from "./fields/TextField";
+import { TitleFieldFormElement } from "./fields/TitleField";
 //Tipo de elementos de formulario disponibles.
-export type ElementsType = "TextField";
+export type ElementsType = 
+  | "TextField" 
+  | "TitleField" 
+  | "SubTitleField"
+  | "ParagraphField";
 
 export type submitFunction = (key: string, value: string) => void;
-
-
 
 /**
  * Tipo para un elemento de formulario.
@@ -51,14 +56,13 @@ export type FormElement = {
   formComponent: React.FC<{
     elementInstance: FormElementInstance;
     submitValue: submitFunction;
-    isInvalid?:boolean;
-    defaultValue?:string
+    isInvalid?: boolean;
+    defaultValue?: string;
   }>;
   //Un componente react para el UI de propiedades.
   propertiesComponent: React.FC<{
     elementInstance: FormElementInstance;
   }>;
-
 
   validate: (FormElement: FormElementInstance, currentValue: string) => boolean;
 };
@@ -87,4 +91,7 @@ type FormElementsType = {
  */
 export const FormElements: FormElementsType = {
   TextField: TextFieldFormElement,
+  TitleField: TitleFieldFormElement,
+  SubTitleField: SubTitleFieldFormElement,
+  ParagraphField: ParagraphFieldFormElement,
 };
