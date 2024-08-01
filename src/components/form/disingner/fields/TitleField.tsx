@@ -1,7 +1,7 @@
 "use client";
 
 import {  Heading, } from "lucide-react";
-import { ElementsType, FormElement, FormElementInstance, submitFunction } from "../FormElemets";
+import { ElementsType, FormElement, FormElementInstance } from "../FormElemets";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
@@ -19,8 +19,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Switch } from "@/components/ui/switch";
-import { cn } from "@/lib/utils";
 
 
 const type: ElementsType = "TitleField";
@@ -130,8 +128,8 @@ function DesignerComponent({
     <div className="flex flex-col gap-2 w-full">
       <Label className="text-muted-foreground">
        Titulo
-       <p className="text-xl">{title}</p>
-      </Label>
+      
+      </Label> <p className="text-xl">{title}</p>
     </div>
   );
 }

@@ -1,9 +1,8 @@
 "use client";
 
 import {  Text  } from "lucide-react";
-import { ElementsType, FormElement, FormElementInstance, submitFunction } from "../FormElemets";
+import { ElementsType, FormElement, FormElementInstance } from "../FormElemets";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,20 +12,18 @@ import useDesigner from "../../hooks/useDesigner";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Switch } from "@/components/ui/switch";
-import { cn } from "@/lib/utils";
+import { Textarea } from "@/components/ui/textarea";
 
 
 const type: ElementsType = "ParagraphField";
 
 const extraAttributes = {
-  title: "Escriba un parrafo",
+  text: "Escriba un parrafo",
 };
 
 const propiertiesSchema = z.object({
@@ -103,7 +100,8 @@ function PropertiesComponent({
             <FormItem>
               <FormLabel> Text</FormLabel>
               <FormControl>
-                <Input
+                <Textarea
+                  rows={5}
                   {...field}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") e.currentTarget.blur();
@@ -130,8 +128,8 @@ function DesignerComponent({
     <div className="flex flex-col gap-2 w-full">
       <Label className="text-muted-foreground">
        Párrafo
-       <p>{text}</p>
       </Label>
+      <p>{text}</p>
     </div>
   );
 }

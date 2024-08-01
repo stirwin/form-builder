@@ -1,7 +1,7 @@
 "use client";
 
 import { CaseSensitive, Heading1 } from "lucide-react";
-import { ElementsType, FormElement, FormElementInstance, submitFunction } from "../FormElemets";
+import { ElementsType, FormElement, FormElementInstance } from "../FormElemets";
 import Designer from "../Designer";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -131,8 +131,8 @@ function DesignerComponent({
     <div className="flex flex-col gap-2 w-full">
       <Label className="text-muted-foreground">
         <span className="text-muted-foreground">Subtítulo</span> 
-       <p className="text-lg">{title}</p>
-      </Label>
+       
+      </Label><p className="text-lg">{title}</p>
     </div>
   );
 }
