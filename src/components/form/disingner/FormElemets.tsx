@@ -4,6 +4,7 @@
 
 import { ParagraphFieldFormElement } from "./fields/ParagraphField";
 import { SeparatorFieldFormElement } from "./fields/SeparatorField";
+import { SpacerFieldFormElement } from "./fields/SpacerField";
 import { SubTitleFieldFormElement } from "./fields/SubTitleField";
 import { TextFieldFormElement } from "./fields/TextField";
 import { TitleFieldFormElement } from "./fields/TitleField";
@@ -13,7 +14,8 @@ export type ElementsType =
   | "TitleField" 
   | "SubTitleField"
   | "ParagraphField"
-  | "SeparatorField";
+  | "SeparatorField"
+  | "SpacerField";
 /**
 
 export type submitFunction = (key: string, value: string) => void;
@@ -58,7 +60,7 @@ export type FormElement = {
   //Un componente react para el UI de formulario.
   formComponent: React.FC<{
     elementInstance: FormElementInstance;
-    submitValue: submitFunction;
+    submitValue?: submitFunction;
     isInvalid?: boolean;
     defaultValue?: string;
   }>;
@@ -98,4 +100,5 @@ export const FormElements: FormElementsType = {
   SubTitleField: SubTitleFieldFormElement,
   ParagraphField: ParagraphFieldFormElement,
   SeparatorField: SeparatorFieldFormElement,
+  SpacerField: SpacerFieldFormElement,
 };
