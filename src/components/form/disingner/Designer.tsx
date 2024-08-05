@@ -78,8 +78,8 @@ function Designer() {
 
         const overId = over.data?.current?.elementId;
 
-        const overElemetIndex= elements.findIndex((el)=>el.id === over.id);
-        if (overElemetIndex !== -1) {
+        const overElemetIndex= elements.findIndex((el)=>el.id === overId);
+        if (overElemetIndex === -1) {
           throw new Error("Element not found");
         }
         

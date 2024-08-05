@@ -1,7 +1,8 @@
 "use client";
 
-import { CaseSensitive } from "lucide-react";
+import { ArrowDown10, CaseSensitive } from "lucide-react";
 import { ElementsType, FormElement, FormElementInstance, SubmitFunction } from "../FormElemets";
+import Designer from "../Designer";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
@@ -23,10 +24,11 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 
 
-const type: ElementsType = "TextField";
+
+const type: ElementsType = "NumberField";
 
 const extraAttributes = {
-  label: "Campo de texto",
+  label: "Campo de numero",
   helperText: "Helper text",
   required: false,
   placeHolder: "Escriba aqui...",
@@ -39,7 +41,7 @@ const propiertiesSchema = z.object({
   placeHolder: z.string().max(50),
 });
 
-export const TextFieldFormElement: FormElement = {
+export const NumberFieldFormElement: FormElement = {
   type,
   construct: (id: string) => ({
     id,
@@ -47,8 +49,8 @@ export const TextFieldFormElement: FormElement = {
     extraAttributes,
   }),
   designerBtnElement: {
-    icon: CaseSensitive,
-    label: " Campo de texto",
+    icon: ArrowDown10,
+    label: " Campo de numero",
   },
 
   desingerComponent: DesignerComponent,
@@ -227,6 +229,7 @@ function DesignerComponent({
       <Input
         readOnly
         disabled
+        type="number"
         placeholder={element.extraAttributes.placeHolder}
       />
       {helperText && (
@@ -243,7 +246,7 @@ function FormComponent({
     defaultValue
   }: {
     elementInstance: FormElementInstance;
-    submitValue?: SubmitFunction;
+    submitValue?:SubmitFunction;
     isInvalid?:boolean;
     defaultValue?:string;
   }) {
@@ -264,11 +267,12 @@ function FormComponent({
           {element.extraAttributes.required && "*"}
         </Label>
         <Input
+        type="number"
         className={cn(error && "border-red-500")}
           onChange={(e) => setValue(e.target.value)}
           onBlur={(e) => {
             if(!submitValue) return;
-            const valid = TextFieldFormElement.validate(element, e.target.value);
+            const valid = NumberFieldFormElement.validate(element, e.target.value);
             setError(!valid);
             if(!valid) return;
             submitValue(element.id, e.target.value)

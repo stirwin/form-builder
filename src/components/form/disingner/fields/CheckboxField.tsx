@@ -1,6 +1,6 @@
 "use client";
 
-import { CaseSensitive } from "lucide-react";
+import { BookCheck } from "lucide-react";
 import { ElementsType, FormElement, FormElementInstance, SubmitFunction } from "../FormElemets";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -21,25 +21,25 @@ import {
 } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/use-toast";
 
-
-const type: ElementsType = "TextField";
+const type: ElementsType = "CheckboxField";
 
 const extraAttributes = {
-  label: "Campo de texto",
+  label: "Checkbox field",
   helperText: "Helper text",
   required: false,
-  placeHolder: "Escriba aqui...",
 };
 
 const propiertiesSchema = z.object({
   label: z.string().min(2).max(50),
   helperText: z.string().max(200),
   required: z.boolean().default(false),
-  placeHolder: z.string().max(50),
 });
 
-export const TextFieldFormElement: FormElement = {
+export const CheckboxFieldFormElement: FormElement = {
   type,
   construct: (id: string) => ({
     id,
@@ -47,8 +47,8 @@ export const TextFieldFormElement: FormElement = {
     extraAttributes,
   }),
   designerBtnElement: {
-    icon: CaseSensitive,
-    label: " Campo de texto",
+    icon: BookCheck,
+    label: "Checkbox field",
   },
 
   desingerComponent: DesignerComponent,
@@ -61,10 +61,10 @@ export const TextFieldFormElement: FormElement = {
   ): boolean => {
     const element = formElemet as CustomInstance;
     if (
-      element.extraAttributes.required){
-        return currentValue.length > 0;
-      }
-      return true; 
+      element.extraAttributes.required) {
+      return currentValue === "true";
+    }
+    return true;
   }
 };
 
@@ -79,15 +79,14 @@ function PropertiesComponent({
   elementInstance: FormElementInstance;
 }) {
   const element = elementInstance as CustomInstance;
-  const { updateElemet } = useDesigner();
+  const { updateElemet, setSelectedElement } = useDesigner();
   const form = useForm<PropertiesFormSchemaType>({
     resolver: zodResolver(propiertiesSchema),
-    mode: "onBlur",
+    mode: "onSubmit",
     defaultValues: {
       label: element.extraAttributes.label,
       helperText: element.extraAttributes.helperText,
       required: element.extraAttributes.required,
-      placeHolder: element.extraAttributes.placeHolder,
     },
   });
 
@@ -96,7 +95,7 @@ function PropertiesComponent({
   }, [element, form]);
 
   function applyChanges(values: PropertiesFormSchemaType) {
-    const { label, helperText, required, placeHolder } = values;
+    const { label, helperText, required } = values;
 
     updateElemet(element.id, {
       ...element,
@@ -104,18 +103,20 @@ function PropertiesComponent({
         label,
         helperText,
         required,
-        placeHolder,
       },
     });
+
+    toast({
+      title: "Elemento actualizado",
+      description: "Elemento actualizado con éxito",
+    });
+    setSelectedElement(null);
   }
 
   return (
     <Form {...form}>
       <form
-        onBlur={form.handleSubmit(applyChanges)}
-        onSubmit={(e) => {
-          e.preventDefault();
-        }}
+        onSubmit={form.handleSubmit(applyChanges)}
         className="space-y-3"
       >
         <FormField
@@ -133,28 +134,6 @@ function PropertiesComponent({
                 />
               </FormControl>
               <FormDescription>La etiqueta de este campo.</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="placeHolder"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Texto de fondo</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") e.currentTarget.blur();
-                  }}
-                />
-              </FormControl>
-              <FormDescription>
-                El texto de fondo de este campo.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -190,7 +169,7 @@ function PropertiesComponent({
               className="flex items-center justify-between rounded-lg
             border p-3 shadow-sm"
             >
-              <div className="espace-y-0.5">
+              <div className="space-y-0.5">
                 <FormLabel>Requerido</FormLabel>
                 <FormDescription>
                   Determina si este campo es requerido.
@@ -206,6 +185,9 @@ function PropertiesComponent({
             </FormItem>
           )}
         />
+        <Button className="w-full" type="submit">
+          Guardar
+        </Button>
       </form>
     </Form>
   );
@@ -217,70 +199,75 @@ function DesignerComponent({
   elementInstance: FormElementInstance;
 }) {
   const element = elementInstance as CustomInstance;
-  const { label, helperText, required, placeHolder } = element.extraAttributes;
+  const { label, helperText, required } = element.extraAttributes;
+  const id = `checkbox-${element.id}`;
   return (
-    <div className="flex flex-col gap-2 w-full">
-      <Label className="font-medium text-sm">
-        {element.extraAttributes.label}
-        {element.extraAttributes.required && "*"}
-      </Label>
-      <Input
-        readOnly
-        disabled
-        placeholder={element.extraAttributes.placeHolder}
-      />
-      {helperText && (
-        <p className="text-xs text-muted-foreground">{helperText}</p>
-      )}
+    <div className="flex items-top space-x-2">
+      <Checkbox id={id} />
+      <div className="grid gap-1.5">
+        <Label htmlFor={id}>
+          {label}
+          {required && "*"}
+        </Label>
+        {helperText && (
+          <p className="text-xs text-muted-foreground">{helperText}</p>
+        )}
+      </div>
     </div>
   );
 }
 
 function FormComponent({
-    elementInstance,
-    submitValue,
-    isInvalid,
-    defaultValue
-  }: {
-    elementInstance: FormElementInstance;
-    submitValue?: SubmitFunction;
-    isInvalid?:boolean;
-    defaultValue?:string;
-  }) {
-    const element = elementInstance as CustomInstance;
+  elementInstance,
+  submitValue,
+  isInvalid,
+  defaultValue
+}: {
+  elementInstance: FormElementInstance;
+  submitValue?: SubmitFunction;
+  isInvalid?: boolean;
+  defaultValue?: string;
+}) {
+  const element = elementInstance as CustomInstance;
 
-    const [value, setValue] = useState(defaultValue || "");
-    const [error, setError] = useState(false);
+  const [value, setValue] = useState<boolean>(
+    defaultValue === "true" ? true : false
+  );
+  const [error, setError] = useState(false);
 
-    useEffect(() => {
-      setError(isInvalid===true);
-    }, [isInvalid]);
+  useEffect(() => {
+    setError(isInvalid === true);
+  }, [isInvalid]);
 
-    const { label, helperText, required, placeHolder } = element.extraAttributes;
-    return (
-      <div className="flex flex-col gap-2 w-full">
-        <Label className={cn(error && "text-red-500")}>
-          {element.extraAttributes.label}
-          {element.extraAttributes.required && "*"}
-        </Label>
-        <Input
+  const { label, helperText, required } = element.extraAttributes;
+  const id = `checkbox-${element.id}`;
+  return (
+    <div className="flex items-top space-x-2">
+      <Checkbox id={id}
+        checked={value}
         className={cn(error && "border-red-500")}
-          onChange={(e) => setValue(e.target.value)}
-          onBlur={(e) => {
-            if(!submitValue) return;
-            const valid = TextFieldFormElement.validate(element, e.target.value);
-            setError(!valid);
-            if(!valid) return;
-            submitValue(element.id, e.target.value)
-          }}
-          value={value}
-          placeholder={element.extraAttributes.placeHolder}
-        />
+        onCheckedChange={(checked) => {
+          let value = false;
+          if (checked === true) value = true;
+
+          setValue(value);
+          if (!submitValue) return;
+          const stringValue = value ? "true" : "false";
+          const valid = CheckboxFieldFormElement.validate(element, stringValue);
+          setError(!valid);
+          submitValue(element.id, stringValue);
+        }} />
+      <div className="grid gap-1.5">
+        <Label htmlFor={id} className={cn(error && "text-red-500")}>
+          {label}
+          {required && "*"}
+        </Label>
         {helperText && (
           <p className={cn("text-xs text-muted-foreground",
             error && "text-red-500"
-           )}>{helperText}</p>
+          )}>{helperText}</p>
         )}
       </div>
-    );
-  }
+    </div>
+  );
+}

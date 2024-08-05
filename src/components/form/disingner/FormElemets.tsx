@@ -2,10 +2,15 @@
  * Este módulo define los diferentes elementos de formulario disponibles para el diseñador.
  */
 
+import { CheckboxFieldFormElement } from "./fields/CheckboxField";
+import { DateFíeldFormElement } from "./fields/DateFíeld";
+import { NumberFieldFormElement } from "./fields/NumberField";
 import { ParagraphFieldFormElement } from "./fields/ParagraphField";
+import { SelectFieldFormElement } from "./fields/SelectField";
 import { SeparatorFieldFormElement } from "./fields/SeparatorField";
 import { SpacerFieldFormElement } from "./fields/SpacerField";
 import { SubTitleFieldFormElement } from "./fields/SubTitleField";
+import { TextAreaFormElement } from "./fields/TextAreaField";
 import { TextFieldFormElement } from "./fields/TextField";
 import { TitleFieldFormElement } from "./fields/TitleField";
 //Tipo de elementos de formulario disponibles.
@@ -15,10 +20,15 @@ export type ElementsType =
   | "SubTitleField"
   | "ParagraphField"
   | "SeparatorField"
-  | "SpacerField";
-/**
+  | "SpacerField"
+  | "NumberField"
+  | "TextAreaField"
+  | "DateFíeld"
+  | "SelectField"
+  | "CheckboxField";
+  
+  export type SubmitFunction = (key: string, value: string) => void;
 
-export type submitFunction = (key: string, value: string) => void;
 
 /**
  * Tipo para un elemento de formulario.
@@ -60,7 +70,7 @@ export type FormElement = {
   //Un componente react para el UI de formulario.
   formComponent: React.FC<{
     elementInstance: FormElementInstance;
-    submitValue?: submitFunction;
+    submitValue?: SubmitFunction;
     isInvalid?: boolean;
     defaultValue?: string;
   }>;
@@ -101,4 +111,9 @@ export const FormElements: FormElementsType = {
   ParagraphField: ParagraphFieldFormElement,
   SeparatorField: SeparatorFieldFormElement,
   SpacerField: SpacerFieldFormElement,
+  NumberField: NumberFieldFormElement,
+  TextAreaField: TextAreaFormElement,
+  DateFíeld: DateFíeldFormElement,
+  SelectField: SelectFieldFormElement,
+  CheckboxField: CheckboxFieldFormElement,
 };

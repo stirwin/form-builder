@@ -1,7 +1,8 @@
 "use client";
 
-import { CaseSensitive } from "lucide-react";
+import { CalendarDays, } from "lucide-react";
 import { ElementsType, FormElement, FormElementInstance, SubmitFunction } from "../FormElemets";
+import Designer from "../Designer";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
@@ -21,25 +22,27 @@ import {
 } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
 
 
-const type: ElementsType = "TextField";
+const type: ElementsType = "DateFíeld";
 
 const extraAttributes = {
-  label: "Campo de texto",
-  helperText: "Helper text",
+  label: "Campo de fecha",
+  helperText: "Selecione una fecha",
   required: false,
-  placeHolder: "Escriba aqui...",
 };
 
 const propiertiesSchema = z.object({
   label: z.string().min(2).max(50),
   helperText: z.string().max(200),
   required: z.boolean().default(false),
-  placeHolder: z.string().max(50),
 });
 
-export const TextFieldFormElement: FormElement = {
+export const DateFíeldFormElement: FormElement = {
   type,
   construct: (id: string) => ({
     id,
@@ -47,8 +50,8 @@ export const TextFieldFormElement: FormElement = {
     extraAttributes,
   }),
   designerBtnElement: {
-    icon: CaseSensitive,
-    label: " Campo de texto",
+    icon: CalendarDays,
+    label: " Campo de fecha",
   },
 
   desingerComponent: DesignerComponent,
@@ -61,10 +64,10 @@ export const TextFieldFormElement: FormElement = {
   ): boolean => {
     const element = formElemet as CustomInstance;
     if (
-      element.extraAttributes.required){
-        return currentValue.length > 0;
-      }
-      return true; 
+      element.extraAttributes.required) {
+      return currentValue.length > 0;
+    }
+    return true;
   }
 };
 
@@ -87,7 +90,6 @@ function PropertiesComponent({
       label: element.extraAttributes.label,
       helperText: element.extraAttributes.helperText,
       required: element.extraAttributes.required,
-      placeHolder: element.extraAttributes.placeHolder,
     },
   });
 
@@ -96,7 +98,7 @@ function PropertiesComponent({
   }, [element, form]);
 
   function applyChanges(values: PropertiesFormSchemaType) {
-    const { label, helperText, required, placeHolder } = values;
+    const { label, helperText, required } = values;
 
     updateElemet(element.id, {
       ...element,
@@ -104,7 +106,6 @@ function PropertiesComponent({
         label,
         helperText,
         required,
-        placeHolder,
       },
     });
   }
@@ -133,28 +134,6 @@ function PropertiesComponent({
                 />
               </FormControl>
               <FormDescription>La etiqueta de este campo.</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="placeHolder"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Texto de fondo</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") e.currentTarget.blur();
-                  }}
-                />
-              </FormControl>
-              <FormDescription>
-                El texto de fondo de este campo.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -224,11 +203,11 @@ function DesignerComponent({
         {element.extraAttributes.label}
         {element.extraAttributes.required && "*"}
       </Label>
-      <Input
-        readOnly
-        disabled
-        placeholder={element.extraAttributes.placeHolder}
-      />
+      <Button variant={"outline"} className="w-full justify-start text-left
+      font-normal">
+        <CalendarDays className="mr-2 h-4 w-4" />
+        <span>Seleccione una fecha</span>
+      </Button>
       {helperText && (
         <p className="text-xs text-muted-foreground">{helperText}</p>
       )}
@@ -237,50 +216,66 @@ function DesignerComponent({
 }
 
 function FormComponent({
-    elementInstance,
-    submitValue,
-    isInvalid,
-    defaultValue
-  }: {
-    elementInstance: FormElementInstance;
-    submitValue?: SubmitFunction;
-    isInvalid?:boolean;
-    defaultValue?:string;
-  }) {
-    const element = elementInstance as CustomInstance;
+  elementInstance,
+  submitValue,
+  isInvalid,
+  defaultValue
+}: {
+  elementInstance: FormElementInstance;
+  submitValue?: SubmitFunction;
+  isInvalid?: boolean;
+  defaultValue?: string;
+}) {
+  const element = elementInstance as CustomInstance;
 
-    const [value, setValue] = useState(defaultValue || "");
-    const [error, setError] = useState(false);
+  const [date, setDate] = useState<Date | undefined>(defaultValue ? new Date(defaultValue) : undefined);
+  const [error, setError] = useState(false);
 
-    useEffect(() => {
-      setError(isInvalid===true);
-    }, [isInvalid]);
+  useEffect(() => {
+    setError(isInvalid === true);
+  }, [isInvalid]);
 
-    const { label, helperText, required, placeHolder } = element.extraAttributes;
-    return (
-      <div className="flex flex-col gap-2 w-full">
-        <Label className={cn(error && "text-red-500")}>
-          {element.extraAttributes.label}
-          {element.extraAttributes.required && "*"}
-        </Label>
-        <Input
-        className={cn(error && "border-red-500")}
-          onChange={(e) => setValue(e.target.value)}
-          onBlur={(e) => {
-            if(!submitValue) return;
-            const valid = TextFieldFormElement.validate(element, e.target.value);
-            setError(!valid);
-            if(!valid) return;
-            submitValue(element.id, e.target.value)
-          }}
-          value={value}
-          placeholder={element.extraAttributes.placeHolder}
-        />
-        {helperText && (
-          <p className={cn("text-xs text-muted-foreground",
-            error && "text-red-500"
-           )}>{helperText}</p>
-        )}
-      </div>
-    );
-  }
+  const { label, helperText, required, placeHolder } = element.extraAttributes;
+  return (
+    <div className="flex flex-col gap-2 w-full">
+      <Label className={cn(error && "text-red-500")}>
+        {element.extraAttributes.label}
+        {element.extraAttributes.required && "*"}
+      </Label>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button 
+          variant={"outline"} 
+          className={cn("w-full justify-start text-left font-normal",
+            !date && "text-muted-foreground",
+            error && "border-red-500"
+          )}>
+            <CalendarDays className="mr-2 h-4 w-4" />
+            {date ? format(date, "PPP") : <span>Seleccione una fecha</span>}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={(date)=>{
+              setDate(date);
+
+              if(!submitValue) return;
+              const value = date?.toISOString() || "";
+              const valid = DateFíeldFormElement.validate(element, value);
+              setError(!valid);
+              submitValue(element.id,value)
+            }}
+            initialFocus
+          />
+        </PopoverContent>
+      </Popover>
+      {helperText && (
+        <p className={cn("text-xs text-muted-foreground",
+          error && "text-red-500"
+        )}>{helperText}</p>
+      )}
+    </div>
+  );
+}

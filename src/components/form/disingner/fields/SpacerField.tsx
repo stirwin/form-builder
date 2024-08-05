@@ -41,7 +41,7 @@ export const SpacerFieldFormElement: FormElement = {
   }),
   designerBtnElement: {
     icon:  SeparatorHorizontal,
-    label: " Titulo",
+    label: " Separador 2",
   },
 
   desingerComponent: DesignerComponent,
