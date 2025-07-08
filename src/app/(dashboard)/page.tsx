@@ -26,6 +26,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatDistance } from "date-fns";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Mas } from "@/components/form/Mas";
 
 // Componente principal Home
 export default function Home() {
@@ -195,20 +196,32 @@ function FormCard({ form }: { form: Form }) {
         {form.description || "No hay descripción"}
       </CardContent>
       <CardFooter>
-        {form.published && (
-          <Button asChild className="w-full mt-2 text-md gap-4">
-            <Link href={`/forms/${form.id}`}>
-              Ver envíos <ArrowRight />
-            </Link>
-          </Button>
-        )}
-
-        {!form.published && (
-          <Button asChild className="w-full mt-2 text-md gap-4">
-            <Link href={`/builder/${form.id}`}>
-              Editar formulario  <ClipboardPen />
-            </Link>
-          </Button>
+      {form.published ? (
+          <div className="flex items-center justify-items-center w-full gap-2">
+            <div className="w-full">
+              <Button asChild className="w-full mt-2 text-md gap-4">
+                <Link href={`/forms/${form.id}`}>
+                  Ver envíos <ArrowRight />
+                </Link>
+              </Button>
+            </div>
+            <div className="w-auto">
+              <Mas formId={form.id} showOnlyDelete />
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center justify-items-center w-full gap-2">
+            <div className="w-full">
+              <Button asChild className="w-full mt-2 text-md gap-4">
+                <Link href={`/builder/${form.id}`}>
+                  Editar formulario <ClipboardPen />
+                </Link>
+              </Button>
+            </div>
+            <div className="w-auto">
+              <Mas formId={form.id} initialName={form.name} initialDescription={form.description || ""} />
+            </div>
+          </div>
         )}
       </CardFooter>
     </Card>

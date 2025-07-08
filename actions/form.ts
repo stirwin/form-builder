@@ -200,3 +200,160 @@ export async function GetFormWithSubmissions (id: number) {
   })
 }
 
+// Función para duplicar un formulario existente
+// Función para duplicar un formulario existente
+export async function DuplicateForm(formId: number) {
+  // Obtener el usuario actual desde Clerk
+  const user = await currentUser();
+  if (!user) {
+    throw new UserNotFoundErr();
+  }
+
+  // Buscar el formulario que se va a duplicar
+  const form = await prisma.form.findUnique({
+    where: { id: formId, userId: user.id },
+  });
+
+  if (!form) {
+    throw new Error("Formulario no encontrado");
+  }
+
+  // Crear un nuevo formulario duplicado
+  const duplicatedForm = await prisma.form.create({
+    data: {
+      userId: user.id,
+      name: `${form.name} (Duplicado)`, // Renombrar el formulario duplicado
+      description: form.description,
+      content: form.content, // Copiar el contenido del formulario original
+      published: false, // El formulario duplicado comienza como no publicado
+    },
+  });
+
+  return duplicatedForm;
+}
+
+export async function UpdateForm(formId: number, data: { name: string; description: string }) {
+  const user = await currentUser();
+  if (!user) {
+    throw new Error("Usuario no encontrado");
+  }
+
+  return prisma.form.update({
+    where: {
+      id: formId,
+      userId: user.id,
+    },
+    data: {
+      name: data.name,
+      description: data.description,
+    },
+  });
+}
+
+
+export async function DeleteForm(formId: number) {
+  const user = await currentUser();
+  if (!user) {
+    throw new Error("Usuario no encontrado");
+  }
+1
+  // Eliminar todos los envíos asociados al formulario
+  await prisma.formSubmissions.deleteMany({
+    where: {
+      formId: formId,
+    },
+  });
+
+  // Luego eliminar el formulario
+  return prisma.form.delete({
+    where: {
+      id: formId,
+      userId: user.id,
+    },
+  });
+}
+
+// Nueva función para actualizar una submission
+export async function UpdateSubmission(formId: number, submissionId: number, updatedContent: any) {
+  const user = await currentUser();
+  if (!user) {
+    throw new UserNotFoundErr();
+  }
+
+  // Obtener el contenido actual de la submission
+  const existingSubmission = await prisma.formSubmissions.findUnique({
+    where: { id: submissionId },
+    select: { content: true },
+  });
+
+  if (!existingSubmission) {
+    throw new Error("Submission no encontrada");
+  }
+
+  const parsedExistingContent = JSON.parse(existingSubmission.content);
+
+  // Fusionar formValues y totals actualizados con los existentes
+  const mergedFormValues = {
+    ...parsedExistingContent.formValues,  // Mantén los formValues existentes
+    ...updatedContent.formValues,  // Sobrescribe los nuevos valores
+  };
+
+  const mergedTotals = {
+    ...parsedExistingContent.totals,  // Mantén los totals existentes
+    ...updatedContent.totals,  // Sobrescribe los nuevos totals
+  };
+
+  const mergedContent = {
+    ...parsedExistingContent,
+    formValues: mergedFormValues,
+    totals: mergedTotals,  // Asegúrate de actualizar `totals`
+  };
+
+  // Actualizar la submission con los nuevos datos
+  const updatedSubmission = await prisma.formSubmissions.update({
+    where: { id: submissionId },
+    data: {
+      content: JSON.stringify(mergedContent),  // Guarda el contenido actualizado
+    },
+  });
+
+  console.log("Submission actualizada correctamente en la BD:", updatedSubmission);
+
+  return updatedSubmission;
+}
+
+export async function DeleteSubmission(submissionId: number) {
+  const user = await currentUser();
+  if (!user) {
+    throw new Error("Usuario no encontrado");
+  }
+
+  try {
+    // Primero, obtengamos la submission para verificar que existe
+    const submission = await prisma.formSubmissions.findUnique({
+      where: { id: submissionId },
+    });
+
+    if (!submission) {
+      throw new Error("Submission no encontrada");
+    }
+
+    // Ahora procedemos con la eliminación
+    const deletedSubmission = await prisma.formSubmissions.delete({
+      where: { id: submissionId },
+    });
+
+    if (deletedSubmission) {
+      // Actualizar el conteo de submissions en el formulario correspondiente
+      await prisma.form.update({
+        where: { id: deletedSubmission.formId },
+        data: { submissions: { decrement: 1 } },
+      });
+    }
+
+    return deletedSubmission;
+  } catch (error) {
+    console.error("Error detallado al eliminar la submission:", error);
+    throw new Error(`No se pudo eliminar la submission: ${error}`);
+  }
+}

@@ -12,8 +12,7 @@ generator client {
 // Fuente de datos para la base de datos PostgreSQL
 datasource db {
   provider  = "postgresql"
-  url       = env("POSTGRES_PRISMA_URL") // usa conexión de agrupamiento (pooling)
-  directUrl = env("POSTGRES_URL_NON_POOLING") // usa una conexión directa
+  url       = env("DATABASE_URL") // usa conexión de agrupamiento (pooling)
 }
 
 // Modelo para los formularios

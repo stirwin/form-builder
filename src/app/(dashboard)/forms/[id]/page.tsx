@@ -24,6 +24,7 @@ import { formatDistance } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
+import { SubmissionRow } from "@/components/form/accionestable/SubmissionRow";
 
 async function FormDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -110,9 +111,9 @@ async function FormDetailPage({ params }: { params: { id: string } }) {
 export default FormDetailPage;
 
 type Rows = {
-  [key: string]: string;
-} & {
-  submittedAt: Date;
+  id: number; // Asegúrate de incluir id
+  submittedAt: Date; // Asegúrate de incluir submittedAt
+  [key: string]: string | number | Date; // Otras propiedades pueden ser string, number o Date
 };
 
 async function SubmissionsTable({ id }: { id: number }) {
@@ -122,16 +123,17 @@ async function SubmissionsTable({ id }: { id: number }) {
     throw new Error("Form no encontrado");
   }
 
-  const formElements = JSON.parse(form.content) as FormElementInstance[];
+  // Aquí se define formContent a partir de form.content
+  const formContent = JSON.parse(form.content) as FormElementInstance[];
 
-  const colums: {
+  const columns: {
     id: string;
     label: string;
     required: boolean;
     type: ElementsType;
   }[] = [];
 
-  formElements.forEach((element) => {
+  formContent.forEach((element) => {
     switch (element.type) {
       case "TextField":
       case "DateFíeld":
@@ -139,7 +141,7 @@ async function SubmissionsTable({ id }: { id: number }) {
       case "TextAreaField":
       case "SelectField":
       case "CheckboxField":
-        colums.push({
+        columns.push({
           id: element.id,
           label: element.extraAttributes?.label,
           required: element.extraAttributes?.required,
@@ -158,7 +160,7 @@ async function SubmissionsTable({ id }: { id: number }) {
       ...content,
       submittedAt: submission.createdAt,
     });
-  })
+  });
 
   return (
     <>
@@ -167,33 +169,27 @@ async function SubmissionsTable({ id }: { id: number }) {
         <Table>
           <TableHeader>
             <TableRow>
-              {colums.map((column) => (
+              {columns.map((column) => (
                 <TableHead key={column.id} className="uppercase">
                   {column.label}
                 </TableHead>
               ))}
 
               <TableHead className="text-muted-foreground text-right uppercase">
-                Enviado hace 
+                Enviado hace
               </TableHead>
+              <TableHead className="uppercase">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {rows.map((row, index) => (
-              <TableRow key={index}>
-                {colums.map((column) => (
-                  <RowCell 
-                  key={column.id} 
-                  type={column.type}
-                  value={row[column.id]}
-                  />     
-                ))}
-                <TableCell className="text-muted-foreground text-right">
-                  {formatDistance(row.submittedAt, new Date(),{
-                    addSuffix: true
-                  })}
-                </TableCell>
-              </TableRow>
+              <SubmissionRow
+                key={row.id} // Usa row.id en lugar de index si está disponible
+                row={row}
+                columns={columns}
+                formContent={formContent}
+                formId={id}
+              />
             ))}
           </TableBody>
         </Table>
@@ -202,7 +198,7 @@ async function SubmissionsTable({ id }: { id: number }) {
   );
 }
 
-function RowCell({type, value}: {type: ElementsType, value: string}) {
+function RowCell({ type, value }: { type: ElementsType; value: string }) {
   let node: ReactNode = value;
 
   switch (type) {
@@ -211,12 +207,12 @@ function RowCell({type, value}: {type: ElementsType, value: string}) {
       const date = new Date(value);
       node = <Badge variant="outline">{format(date, "dd/MM/yyyy")}</Badge>;
       break;
-      case "CheckboxField":
-        const cheked = value === "true" ? true : false;
-        node= <Checkbox checked={cheked}  disabled/>;
-        break;
-        default:
-          break;
+    case "CheckboxField":
+      const cheked = value === "true" ? true : false;
+      node = <Checkbox checked={cheked} disabled />;
+      break;
+    default:
+      break;
   }
 
   return <TableCell>{node}</TableCell>;
