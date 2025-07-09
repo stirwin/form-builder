@@ -1,7 +1,10 @@
-import React from 'react'
 import { GetFormContentByUrl } from '../../../../actions/form';
 import FormSubmitComponent from '@/components/form/forms/FormSubmitComponent';
 import { FormElementInstance } from '@/components/form/disingner/FormElemets';
+
+
+//ya que el submit es dinamico
+export const dynamic = 'force-dynamic';
 
 async function SubmitPage({params}: {params: {formUrl: string}}) {
   

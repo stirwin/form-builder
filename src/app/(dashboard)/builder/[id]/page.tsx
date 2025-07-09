@@ -4,6 +4,7 @@ import Formbuilder from '@/components/form/disingner/Formbuilder';
 
 // ① Fuerza SSR dinámico (ya no intenta SSG)
 export const dynamic = 'force-dynamic';
+
 async function BuilderPage({params,}:{params:{id:string}}) {
     const form = await GetFormById(Number(params.id));
 
