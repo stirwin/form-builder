@@ -40,10 +40,10 @@ const extraAttributes = {
 
 const propiertiesSchema = z.object({
   label: z.string().min(2).max(50),
-  helperText: z.string().max(200),
-  required: z.boolean().default(false),
+  helperText: z.string().max(200),  
+  required: z.boolean(),
   placeHolder: z.string().max(50),
-  options: z.array(z.string()).default([]),
+  options: z.array(z.string()),
 });
 
 export const SelectFieldFormElement: FormElement = {

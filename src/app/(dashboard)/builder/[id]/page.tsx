@@ -1,21 +1,18 @@
-import React from 'react'
+// app/(dashboard)/builder/[id]/page.tsx
+import React from 'react';
 import { GetFormById } from '../../../../../actions/form';
 import Formbuilder from '@/components/form/disingner/Formbuilder';
 
-// ① Fuerza SSR dinámico (ya no intenta SSG)
+export const runtime = 'edge';
+
 export const dynamic = 'force-dynamic';
 
-async function BuilderPage({params,}:{params:{id:string}}) {
-    const form = await GetFormById(Number(params.id));
+export default async function BuilderPage(
+  props: { params: Promise<{ id: string }> }
+): Promise<React.JSX.Element> {
+  const { id } = await props.params; // ✅ await aquí
+  const form = await GetFormById(Number(id));
 
-    if (!form) {
-        throw new Error('Form no encontrado');
-    }
-  return (
-   
-       <Formbuilder form={form}/>
- 
-  )
+  if (!form) throw new Error('Form no encontrado');
+  return <Formbuilder form={form} />;
 }
-
-export default BuilderPage;

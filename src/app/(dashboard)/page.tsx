@@ -28,6 +28,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Mas } from "@/components/form/Mas";
 
+export const runtime = 'edge';
+
 //ya que el dashboard es dinamico
 export const dynamic = 'force-dynamic';
 

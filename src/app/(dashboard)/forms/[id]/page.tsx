@@ -20,9 +20,12 @@ import {
 } from "@/components/ui/table";
 import { SubmissionRow } from "@/components/form/accionestable/SubmissionRow";
 
+export const runtime = 'edge';
+
 export const dynamic = 'force-dynamic';
-async function FormDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+async function FormDetailPage(props: { params: Promise<{ id: string }> }
+): Promise<React.JSX.Element> {
+  const { id } = await props.params;
   const form = await GetFormById(Number(id));
 
   if (!form) {

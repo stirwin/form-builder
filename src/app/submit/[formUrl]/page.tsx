@@ -2,23 +2,19 @@ import { GetFormContentByUrl } from '../../../../actions/form';
 import FormSubmitComponent from '@/components/form/forms/FormSubmitComponent';
 import { FormElementInstance } from '@/components/form/disingner/FormElemets';
 
-
-//ya que el submit es dinamico
 export const dynamic = 'force-dynamic';
 
-async function SubmitPage({params}: {params: {formUrl: string}}) {
-  
-    const form = await GetFormContentByUrl(params.formUrl);
-    
-    if(!form) {
-      throw new Error('Formulario no encontrado');
-    }
-    const formContent = JSON.parse(form.content) as FormElementInstance[];
-  
-    return (
-     <FormSubmitComponent formUrl={params.formUrl} content={formContent} />
- 
-  )
-}
+export default async function SubmitPage(
+  props: { params: Promise<{ formUrl: string }> }
+): Promise<React.JSX.Element> {
+  const { formUrl } = await props.params;
+  const form = await GetFormContentByUrl(formUrl);
 
-export default SubmitPage
+  if (!form) {
+    throw new Error('Formulario no encontrado');
+  }
+
+  const formContent = JSON.parse(form.content) as FormElementInstance[];
+
+  return <FormSubmitComponent formUrl={formUrl} content={formContent} />;
+}

@@ -39,7 +39,7 @@ const extraAttributes = {
 const propiertiesSchema = z.object({
   label: z.string().min(2).max(50),
   helperText: z.string().max(200),
-  required: z.boolean().default(false),
+  required: z.boolean(),
 });
 
 export const DateFíeldFormElement: FormElement = {
