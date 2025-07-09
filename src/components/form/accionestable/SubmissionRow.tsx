@@ -16,7 +16,7 @@ interface Column {
   id: string;
   label: string;
   required: boolean;
-  type: ElementsType; // Asegúrate de que ElementsType esté importado correctamente
+  type: ElementsType;
 }
 
 interface SubmissionRowProps {

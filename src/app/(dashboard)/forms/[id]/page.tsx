@@ -3,7 +3,6 @@ import {
   GetFormById,
   GetFormWithSubmissions,
 } from "../../../../../actions/form";
-import Formbuilder from "@/components/form/disingner/Formbuilder";
 import VisitBtn from "@/components/form/forms/VisitBtn";
 import FormLinkShare from "@/components/form/forms/FormLinkShare";
 import { StatsCard } from "../../page";
@@ -15,15 +14,10 @@ import {
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatDistance } from "date-fns";
-import { Badge } from "@/components/ui/badge";
-import { format } from "date-fns";
-import { Checkbox } from "@/components/ui/checkbox";
 import { SubmissionRow } from "@/components/form/accionestable/SubmissionRow";
 
 export const dynamic = 'force-dynamic';
@@ -44,9 +38,6 @@ async function FormDetailPage({ params }: { params: { id: string } }) {
   if (visits > 0) {
     submissionRate = (submissions / visits) * 100;
   }
-
-  // Calcula la tasa de rebote
-  const bounceRate = 100 - submissionRate;
 
   return (
     <>
@@ -183,7 +174,7 @@ async function SubmissionsTable({ id }: { id: number }) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {rows.map((row, index) => (
+            {rows.map((row) => (
               <SubmissionRow
                 key={row.id} // Usa row.id en lugar de index si está disponible
                 row={row}
@@ -197,24 +188,4 @@ async function SubmissionsTable({ id }: { id: number }) {
       </div>
     </>
   );
-}
-
-function RowCell({ type, value }: { type: ElementsType; value: string }) {
-  let node: ReactNode = value;
-
-  switch (type) {
-    case "DateFíeld":
-      if (!value) break;
-      const date = new Date(value);
-      node = <Badge variant="outline">{format(date, "dd/MM/yyyy")}</Badge>;
-      break;
-    case "CheckboxField":
-      const cheked = value === "true" ? true : false;
-      node = <Checkbox checked={cheked} disabled />;
-      break;
-    default:
-      break;
-  }
-
-  return <TableCell>{node}</TableCell>;
 }
