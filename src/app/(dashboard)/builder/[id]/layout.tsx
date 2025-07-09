@@ -1,5 +1,7 @@
 import React, { ReactNode } from 'react'
 
+// ① Fuerza SSR dinámico (ya no intenta SSG)
+export const dynamic = 'force-dynamic';
 
 function layout({children}:{children: ReactNode}) {
   return (

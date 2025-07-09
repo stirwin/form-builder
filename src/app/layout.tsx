@@ -13,6 +13,9 @@ import { Toaster } from "@/components/ui/toaster";
 import DesignerContextProvider from "@/components/form/disingner/context/DisignerContext";
  import NextTopLoader from "nextjs-toploader";
 
+// ① Fuerza SSR dinámico (ya no intenta SSG)
+export const dynamic = 'force-dynamic';
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
