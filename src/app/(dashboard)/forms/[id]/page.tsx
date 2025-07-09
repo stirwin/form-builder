@@ -26,6 +26,7 @@ import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SubmissionRow } from "@/components/form/accionestable/SubmissionRow";
 
+export const dynamic = 'force-dynamic';
 async function FormDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
   const form = await GetFormById(Number(id));
