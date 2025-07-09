@@ -28,6 +28,9 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Mas } from "@/components/form/Mas";
 
+//ya que el dashboard es dinamico
+export const dynamic = 'force-dynamic';
+
 // Componente principal Home
 export default function Home() {
   return (
