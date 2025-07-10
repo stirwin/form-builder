@@ -12,7 +12,7 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import DesignerContextProvider from "@/components/form/disingner/context/DisignerContext";
  import NextTopLoader from "nextjs-toploader";
-
+ export const runtime = 'edge';
 // ① Fuerza SSR dinámico (ya no intenta SSG)
 export const dynamic = 'force-dynamic';
 

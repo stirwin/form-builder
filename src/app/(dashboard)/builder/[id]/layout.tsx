@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-
+export const runtime = 'edge';
 // ① Fuerza SSR dinámico (ya no intenta SSG)
 export const dynamic = 'force-dynamic';
 

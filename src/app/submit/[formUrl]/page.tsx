@@ -2,6 +2,8 @@ import { GetFormContentByUrl } from '../../../../actions/form';
 import FormSubmitComponent from '@/components/form/forms/FormSubmitComponent';
 import { FormElementInstance } from '@/components/form/disingner/FormElemets';
 
+
+export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
 export default async function SubmitPage(

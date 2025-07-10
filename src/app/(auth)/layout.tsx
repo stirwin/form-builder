@@ -2,7 +2,7 @@ import Logo from "@/components/form/Logo";
 import ThemeSwitcher from "@/components/form/ThemeSwitcher";
 import { UserButton } from "@clerk/nextjs";
 import React, { ReactNode } from "react";
-
+export const runtime = 'edge';
 function layout({ children }: { children: ReactNode }) {
   return (
     <div className="flex flex-col min-h-screen min-w-full bg-background max-h-screen">
