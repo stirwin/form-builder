@@ -1,0 +1,7 @@
+name = "form-builder"
+compatibility_date = "2025-07-15"
+compatibility_flags = ["nodejs_compat"]
+main = ".open-next/worker.js"
+
+[build]
+command = "npm run pages:build"
