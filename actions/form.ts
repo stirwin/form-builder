@@ -102,18 +102,16 @@ export async function GetForms() {
   });
 }
 
-export async function GetFormById(id: number) {
-  const user = await currentUser();
-  if (!user) {
-    throw new UserNotFoundErr(); // Lanza un error si no hay un usuario actual
-  }
-  // Busca y retorna el formulario con el ID proporcionado
+export async function GetFormById(id: number, userId: string) {
+  // La comprobación de usuario ya no es necesaria aquí, 
+  // porque la página se encarga de ello.
+
   return prisma.form.findUnique({
     where: {
-      userId: user.id,
-      id
-    }
-  })
+      userId: userId, // Usa el userId que pasaste como parámetro
+      id: id,
+    },
+  });
 }
 
 export async function UpdateFormContent(id: number, jsoncontent: string) {

@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'; 
 import React, { ReactNode } from "react";
 import {
   GetFormById,
@@ -20,6 +21,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { currentUser } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 import { formatDistance } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
@@ -28,7 +31,15 @@ import { SubmissionRow } from "@/components/form/accionestable/SubmissionRow";
 
 async function FormDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
-  const form = await GetFormById(Number(id));
+
+  // 2. Obtener el usuario DENTRO del componente.
+  const user = await currentUser();
+  if (!user) {
+    // 3. Comprobar si el usuario existe y redirigir si no.
+    redirect("/sign-in");
+  }
+  // 4. Usar el 'id' del usuario obtenido para llamar a GetFormById.
+  const form = await GetFormById(Number(id), user.id);
 
   if (!form) {
     throw new Error("Form no encontrado");
@@ -123,8 +134,19 @@ async function SubmissionsTable({ id }: { id: number }) {
     throw new Error("Form no encontrado");
   }
 
-  // Aquí se define formContent a partir de form.content
-  const formContent = JSON.parse(form.content) as FormElementInstance[];
+  // --- INICIO DE LA CORRECCIÓN ---
+
+  // 1. Manejar de forma segura el parseo del contenido del formulario
+  let formContent: FormElementInstance[] = [];
+  try {
+    // Aseguramos que form.content exista y no sea una cadena vacía antes de parsear
+    if (form.content) {
+      formContent = JSON.parse(form.content) as FormElementInstance[];
+    }
+  } catch (error) {
+    console.error(`Error al parsear el contenido del formulario ${form.id}:`, error);
+    // Si falla, formContent se queda como un array vacío para no romper la UI
+  }
 
   const columns: {
     id: string;
@@ -155,12 +177,25 @@ async function SubmissionsTable({ id }: { id: number }) {
 
   const rows: Rows[] = [];
   form.FormSubmissions.forEach((submission) => {
-    const content = JSON.parse(submission.content);
+    // 2. Manejar de forma segura el parseo de cada envío (submission)
+    let content = {};
+    try {
+      if (submission.content) {
+        content = JSON.parse(submission.content);
+      }
+    } catch (error) {
+      console.error(`Error al parsear el contenido de la submission ${submission.id}:`, error);
+      // Si falla, el contenido de esta fila estará vacío, pero la página no se romperá
+    }
+
     rows.push({
+      id: submission.id, // Añadido para asegurar que `key` en el map funcione
       ...content,
       submittedAt: submission.createdAt,
     });
   });
+
+  // --- FIN DE LA CORRECCIÓN ---
 
   return (
     <>

@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import React from 'react'
 import { GetFormContentByUrl } from '../../../../actions/form';
 import FormSubmitComponent from '@/components/form/forms/FormSubmitComponent';
