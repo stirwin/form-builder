@@ -11,8 +11,8 @@ function layout({ children }: { children: ReactNode }) {
         
       
       </nav>
-      <main className="flex w-full flex-grow"> {children}</main>
-    </div>
+      <main className="flex w-full flex-grow bg-gradient-to-br from-blue-50 to-indigo-100 justify-center items-center p-4 overflow-y-auto">{children}</main>
+      </div>
   );
 }
 

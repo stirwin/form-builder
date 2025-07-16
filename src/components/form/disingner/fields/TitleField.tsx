@@ -1,6 +1,6 @@
 "use client";
 
-import {  Heading, } from "lucide-react";
+import {  Heading, Users, } from "lucide-react";
 import { ElementsType, FormElement, FormElementInstance } from "../FormElemets";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 
 const type: ElementsType = "TitleField";
@@ -120,30 +122,49 @@ function PropertiesComponent({
 function DesignerComponent({
   elementInstance,
 }: {
-  elementInstance: FormElementInstance;
+  elementInstance: FormElementInstance
 }) {
-  const element = elementInstance as CustomInstance;
-  const { title } = element.extraAttributes;
+  const element = elementInstance as CustomInstance
+  const { title, badgeText, description } = element.extraAttributes
+
   return (
-    <div className="flex flex-col gap-2 w-full">
-      <Label className="text-muted-foreground">
-       Titulo
-      
-      </Label> <p className="text-xl">{title}</p>
-    </div>
-  );
+    <Card className=" border-t-4 border-t-blue-500 w-full">
+      <CardHeader className="text-center">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <CardTitle className="text-3xl font-bold text-gray-800">{title}</CardTitle>
+        </div>
+        {badgeText && (
+          <Badge variant="secondary" className="mx-auto text-lg px-4 py-1">
+            {badgeText}
+          </Badge>
+        )}
+        {description && <CardDescription className="text-base mt-4 text-gray-600">{description}</CardDescription>}
+      </CardHeader>
+    </Card>
+  )
 }
 
 function FormComponent({
-    elementInstance,
+  elementInstance,
+}: {
+  elementInstance: FormElementInstance
+}) {
+  const element = elementInstance as CustomInstance
+  const { title, badgeText, description } = element.extraAttributes
 
-  }: {
-    elementInstance: FormElementInstance;
-  }) {
-    const element = elementInstance as CustomInstance;
-
-    const { title } = element.extraAttributes;
-    return (
-      <p className="text-xl">{title}</p>
-    );
-  }
+  return (
+    <Card className="mb-8 border-t-4 border-t-blue-500 shadow-lg w-full">
+      <CardHeader className="text-center">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <CardTitle className="text-3xl font-bold text-gray-800">{title}</CardTitle>
+        </div>
+        {badgeText && (
+          <Badge variant="secondary" className="mx-auto text-lg px-4 py-1">
+            {badgeText}
+          </Badge>
+        )}
+        {description && <CardDescription className="text-base mt-4 text-gray-600">{description}</CardDescription>}
+      </CardHeader>
+    </Card>
+  )
+}

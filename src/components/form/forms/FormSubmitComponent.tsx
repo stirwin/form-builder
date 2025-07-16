@@ -4,8 +4,9 @@ import React, { useCallback, useRef, useState, useTransition } from "react";
 import { FormElementInstance, FormElements } from "../disingner/FormElemets";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
-import { Loader } from "lucide-react";
+import { Loader, Send } from "lucide-react";
 import { SubmitForm } from "../../../../actions/form";
+import { Card, CardContent } from "@/components/ui/card";
 
 function FormSubmitComponent({
   formUrl,
@@ -88,14 +89,18 @@ function FormSubmitComponent({
   }
 
   return (
-    <div className="flex justify-center w-full h-full items-center p-8">
-      <div
+    <div className="w-full h-full  py-8 px-4">
+    <div className="max-w-3xl mx-auto">
+      <form
         key={renderKey}
-        className="max-w-[620px] flex flex-col gap-4 flex-grow bg-background
-         w-full p-8 overflow-y-auto border  rounded"
+        className="space-y-6"
+        onSubmit={(e) => {
+          e.preventDefault()
+          startTransition(submitForm)
+        }}
       >
         {content.map((element) => {
-          const FormElement = FormElements[element.type].formComponent;
+          const FormElement = FormElements[element.type].formComponent
           return (
             <FormElement
               key={element.id}
@@ -104,20 +109,39 @@ function FormSubmitComponent({
               isInvalid={formErrors.current[element.id]}
               defaultValue={formValues.current[element.id]}
             />
-          );
+          )
         })}
-        <Button
-          className="mt-8"
-          onClick={() => {
-            startTransition(submitForm);
-          }}
-          disabled={pending}
-        >
-          {!pending && <>Enviar</>}
-          {pending && <Loader className="w-4 h-4 animate-spin" />}
-        </Button>
-      </div>
+
+        {/* Submit Button */}
+        <Card className="border-t-4 border-t-green-500 shadow-lg">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <Button
+                type="submit"
+                size="lg"
+                className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg shadow-md hover:shadow-lg transition-all duration-200"
+                disabled={pending}
+              >
+                {!pending && (
+                  <>
+                    <Send className="h-5 w-5 mr-2" />
+                    Enviar Evaluación
+                  </>
+                )}
+                {pending && (
+                  <>
+                    <Loader className="w-5 h-5 mr-2 animate-spin" />
+                    Enviando...
+                  </>
+                )}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </form>
     </div>
+  </div>
+
   );
 }
 

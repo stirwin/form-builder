@@ -25,6 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
+import {  Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 
 const type: ElementsType = "SelectField";
@@ -308,54 +309,59 @@ function FormComponent({
   elementInstance,
   submitValue,
   isInvalid,
-  defaultValue
+  defaultValue,
 }: {
-  elementInstance: FormElementInstance;
-  submitValue?: SubmitFunction;
-  isInvalid?: boolean;
-  defaultValue?: string;
+  elementInstance: FormElementInstance
+  submitValue?: SubmitFunction
+  isInvalid?: boolean
+  defaultValue?: string
 }) {
-  const element = elementInstance as CustomInstance;
-
-  const [value, setValue] = useState(defaultValue || "");
-  const [error, setError] = useState(false);
+  const element = elementInstance as CustomInstance
+  const [value, setValue] = useState(defaultValue || "")
+  const [error, setError] = useState(false)
 
   useEffect(() => {
-    setError(isInvalid === true);
-  }, [isInvalid]);
+    setError(isInvalid === true)
+  }, [isInvalid])
 
-  const { label, helperText, required, placeHolder, options } = element.extraAttributes;
+  const { label, helperText, required, placeHolder, options } = element.extraAttributes
+
   return (
-    <div className="flex flex-col gap-2 w-full">
-      <Label className={cn(error && "text-red-500")}>
-        {element.extraAttributes.label}
-        {element.extraAttributes.required && "*"}
-      </Label>
-      <Select
-      defaultValue={value}
-        onValueChange={(value) => {
-          setValue(value);
-          if (!submitValue) return;
-          const valid = SelectFieldFormElement.validate(element, value);
-          setError(!valid);
-          submitValue(element.id, value);
-        }}>
-        <SelectTrigger className={cn("w-full", error && "border-red-500")}>
-          <SelectValue placeholder={placeHolder} />
-        </SelectTrigger>
-        <SelectContent>
-          {options.map((option) => (
-            <SelectItem key={option} value={option}>
-              {option}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      {helperText && (
-        <p className={cn("text-xs text-muted-foreground",
-          error && "text-red-500"
-        )}>{helperText}</p>
-      )}
-    </div>
-  );
+    <Card className="hover:shadow-lg transition-shadow">
+      <CardHeader>
+        <CardTitle className={cn("text-lg text-gray-800 leading-relaxed", error && "text-red-500")}>
+          {element.extraAttributes.label}
+          {element.extraAttributes.required && "*"}
+        </CardTitle>
+        {helperText && (
+          <CardDescription className={cn("text-gray-600 italic", error && "text-red-500")}>
+            💡 {helperText}
+          </CardDescription>
+        )}
+      </CardHeader>
+      <CardContent>
+        <Select
+          defaultValue={value}
+          onValueChange={(value) => {
+            setValue(value)
+            if (!submitValue) return
+            const valid = SelectFieldFormElement.validate(element, value)
+            setError(!valid)
+            submitValue(element.id, value)
+          }}
+        >
+          <SelectTrigger className={cn("w-full", error && "border-red-500")}>
+            <SelectValue placeholder={placeHolder} />
+          </SelectTrigger>
+          <SelectContent>
+            {options.map((option) => (
+              <SelectItem key={option} value={option}>
+                {option}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </CardContent>
+    </Card>
+  )
 }
