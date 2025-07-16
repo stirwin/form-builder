@@ -149,7 +149,9 @@ export async function PublishForm(id: number) {
 export async function GetFormContentByUrl(formUrl: string) {
   return prisma.form.update({
     select: {
-      content: true
+      content: true,
+      name: true,
+      description: true
     },
     data: {
       visits: {
@@ -272,7 +274,7 @@ export async function DeleteForm(formId: number) {
 }
 
 // Nueva función para actualizar una submission
-export async function UpdateSubmission(formId: number, submissionId: number, updatedContent: any) {
+export async function UpdateSubmission(formId: number, submissionId: number, updatedValues: Record<string, any>) {
   const user = await currentUser();
   if (!user) {
     throw new UserNotFoundErr();
@@ -288,35 +290,32 @@ export async function UpdateSubmission(formId: number, submissionId: number, upd
     throw new Error("Submission no encontrada");
   }
 
-  const parsedExistingContent = JSON.parse(existingSubmission.content);
-
-  // Fusionar formValues y totals actualizados con los existentes
-  const mergedFormValues = {
-    ...parsedExistingContent.formValues,  // Mantén los formValues existentes
-    ...updatedContent.formValues,  // Sobrescribe los nuevos valores
+  // Parsear el contenido existente
+  const existingContent = JSON.parse(existingSubmission.content);
+  
+  // Si el contenido existente ya tiene formValues, lo usamos como base
+  // de lo contrario, usamos el contenido existente directamente
+  const baseValues = existingContent.formValues || existingContent;
+  
+  // Fusionar los valores existentes con los actualizados
+  const mergedValues = {
+    ...baseValues,
+    ...updatedValues
   };
 
-  const mergedTotals = {
-    ...parsedExistingContent.totals,  // Mantén los totals existentes
-    ...updatedContent.totals,  // Sobrescribe los nuevos totals
-  };
+  // Eliminar formValues y totals si existen para mantener el formato limpio
+  delete mergedValues.formValues;
+  delete mergedValues.totals;
 
-  const mergedContent = {
-    ...parsedExistingContent,
-    formValues: mergedFormValues,
-    totals: mergedTotals,  // Asegúrate de actualizar `totals`
-  };
-
-  // Actualizar la submission con los nuevos datos
+  // Actualizar la submission con los nuevos valores
   const updatedSubmission = await prisma.formSubmissions.update({
     where: { id: submissionId },
     data: {
-      content: JSON.stringify(mergedContent),  // Guarda el contenido actualizado
+      content: JSON.stringify(mergedValues),
     },
   });
 
   console.log("Submission actualizada correctamente en la BD:", updatedSubmission);
-
   return updatedSubmission;
 }
 

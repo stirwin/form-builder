@@ -12,9 +12,16 @@ async function SubmitPage({params}: {params: {formUrl: string}}) {
       throw new Error('Formulario no encontrado');
     }
     const formContent = JSON.parse(form.content) as FormElementInstance[];
+    const formName = form.name;
+    const formDescription = form.description;
   
     return (
-     <FormSubmitComponent formUrl={params.formUrl} content={formContent} />
+     <FormSubmitComponent 
+      formUrl={params.formUrl} 
+      content={formContent}
+      formName={form.name}
+      formDescription={form.description || ''}
+    />
  
   )
 }

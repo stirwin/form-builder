@@ -29,7 +29,7 @@ function PreviewDialogBtn() {
       </div>
       <div className="bg-accent flex flex-col flex-grow items-center justify-center p-4 
       bg-[url(/paper.svg)]  dark:bg-[url(/paper-dark.svg)] overflow-y-auto"> 
-        <div className="max-w-[620px] flex flex-col gap-4 flex-grow bg-background 
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-100 max-w-[620px] flex flex-col gap-4 flex-grow bg-background 
         h-full w-full rounded-2xl p-8 overflow-y-auto">
           {elements.map((element) => {
             const FormComponent = FormElements[element.type].formComponent;

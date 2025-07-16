@@ -108,12 +108,13 @@ export function Mas({ formId, initialName = '', initialDescription = '', showOnl
           <DropdownMenuRadioGroup>
             {showOnlyDelete ? (
               <>
+                 <DropdownMenuRadioItem value="edit" onClick={() => setIsEditDialogOpen(true)}>
+              Editar
+            </DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="delete" onClick={() => setIsDeleteDialogOpen(true)}>
                 Eliminar
               </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="edit" onClick={() => setIsEditDialogOpen(true)}>
-              Editar
-            </DropdownMenuRadioItem>
+          
 
 
             </>

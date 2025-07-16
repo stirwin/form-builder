@@ -172,7 +172,7 @@ function FormCard({ form }: { form: Form }) {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 justify-between">
-          <span className="truncate font-bold">{form.name}</span>
+          <span className="truncate font-bold" title={form.name}>{form.name}</span>
           {form.published && <Badge>Publicado</Badge>}
           {!form.published && <Badge variant={"destructive"}>Borrador</Badge>}
         </CardTitle>
@@ -205,7 +205,12 @@ function FormCard({ form }: { form: Form }) {
               </Button>
             </div>
             <div className="w-auto">
-              <Mas formId={form.id} showOnlyDelete />
+              <Mas 
+                formId={form.id} 
+                showOnlyDelete 
+                initialName={form.name}
+                initialDescription={form.description || ""}
+              />
             </div>
           </div>
         ) : (

@@ -128,7 +128,7 @@ function DesignerComponent({
   const { title, badgeText, description } = element.extraAttributes
 
   return (
-    <Card className=" border-t-4 border-t-blue-500 w-full">
+    <Card className=" w-full">
       <CardHeader className="text-center">
         <div className="flex items-center justify-center gap-2 mb-2">
           <CardTitle className="text-3xl font-bold text-gray-800">{title}</CardTitle>
@@ -153,7 +153,7 @@ function FormComponent({
   const { title, badgeText, description } = element.extraAttributes
 
   return (
-    <Card className="mb-8 border-t-4 border-t-blue-500 shadow-lg w-full">
+    <Card className="mb-8 border-t-400 w-full">
       <CardHeader className="text-center">
         <div className="flex items-center justify-center gap-2 mb-2">
           <CardTitle className="text-3xl font-bold text-gray-800">{title}</CardTitle>

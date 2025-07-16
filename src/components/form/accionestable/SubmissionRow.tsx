@@ -51,14 +51,15 @@ export function SubmissionRow({ row, columns, formContent, formId }: SubmissionR
     }
   };
 
-  const handleUpdate = async (updatedValues: Record<string, any>) => {
+  const handleUpdate = async (updatedContent: { formValues: Record<string, any>; totals: Record<string, number> }) => {
     try {
-      await UpdateSubmission(formId, row.id, updatedValues); // Función para actualizar los datos en la base de datos
+      // Enviamos directamente los formValues, no como un objeto anidado
+      await UpdateSubmission(formId, row.id, updatedContent.formValues);
       toast({
         title: "Datos actualizados.",
         description: "Los datos se han actualizado correctamente.",
       });
-      router.refresh(); // Refrescar la página después de la actualización
+      router.refresh();
     } catch (error) {
       console.error("Error al actualizar la submission:", error);
       toast({
