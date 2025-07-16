@@ -91,13 +91,13 @@ export async function GetForms() {
     throw new UserNotFoundErr(); // Lanza un error si no hay un usuario actual
   }
 
-  // Busca y retorna los formularios del usuario, ordenados por fecha de creación
+  // Busca y retorna los formularios del usuario, ordenados por fecha de creación (más antiguos primero)
   return await prisma.form.findMany({
     where: {
       userId: user.id,
     },
     orderBy: {
-      createdAt: "desc",
+      createdAt: "asc", // Cambiado de "desc" a "asc" para mostrar primero los más antiguos
     },
   });
 }
@@ -201,7 +201,6 @@ export async function GetFormWithSubmissions (id: number) {
 }
 
 // Función para duplicar un formulario existente
-// Función para duplicar un formulario existente
 export async function DuplicateForm(formId: number) {
   // Obtener el usuario actual desde Clerk
   const user = await currentUser();
@@ -218,11 +217,32 @@ export async function DuplicateForm(formId: number) {
     throw new Error("Formulario no encontrado");
   }
 
-  // Crear un nuevo formulario duplicado
+  // Generar un nombre único para el formulario duplicado
+  const baseName = form.name.replace(/\s*\(Copia(?: \d+)?\)$/, '').trim();
+  let newName = `${baseName} (Copia)`;
+  let counter = 1;
+  
+  // Verificar si ya existe un formulario con el mismo nombre
+  while (true) {
+    const existingForm = await prisma.form.findFirst({
+      where: {
+        userId: user.id,
+        name: newName,
+      },
+    });
+
+    if (!existingForm) break; // Si no existe, salir del bucle
+    
+    // Si existe, añadir un número al final
+    counter++;
+    newName = `${baseName} (Copia ${counter})`;
+  }
+
+  // Crear un nuevo formulario duplicado con el nombre único
   const duplicatedForm = await prisma.form.create({
     data: {
       userId: user.id,
-      name: `${form.name} (Duplicado)`, // Renombrar el formulario duplicado
+      name: newName,
       description: form.description,
       content: form.content, // Copiar el contenido del formulario original
       published: false, // El formulario duplicado comienza como no publicado

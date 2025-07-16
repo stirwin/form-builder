@@ -1,160 +1,202 @@
-export const dynamic = 'force-dynamic'; 
-import React, { ReactNode } from "react";
-import {
-  GetFormById,
-  GetFormWithSubmissions,
-} from "../../../../../actions/form";
-import Formbuilder from "@/components/form/disingner/Formbuilder";
-import VisitBtn from "@/components/form/forms/VisitBtn";
-import FormLinkShare from "@/components/form/forms/FormLinkShare";
-import { StatsCard } from "../../page";
-import { BookText, CirclePlus, MousePointerClick } from "lucide-react";
-import {
-  ElementsType,
-  FormElementInstance,
-} from "@/components/form/disingner/FormElemets";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { currentUser } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
-import { formatDistance } from "date-fns";
-import { Badge } from "@/components/ui/badge";
-import { format } from "date-fns";
-import { Checkbox } from "@/components/ui/checkbox";
-import { SubmissionRow } from "@/components/form/accionestable/SubmissionRow";
+export const dynamic = "force-dynamic"
+
+import type { ReactNode } from "react"
+import { GetFormById, GetFormWithSubmissions } from "../../../../../actions/form"
+import VisitBtn from "@/components/form/forms/VisitBtn"
+import FormLinkShare from "@/components/form/forms/FormLinkShare"
+import { StatsCard } from "../../page" // Importa StatsCard desde la página principal
+import { BookText, CirclePlus, MousePointerClick } from "lucide-react"
+import type { ElementsType, FormElementInstance } from "@/components/form/disingner/FormElemets"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { currentUser } from "@clerk/nextjs/server"
+import { redirect } from "next/navigation"
+import { Badge } from "@/components/ui/badge"
+import { format } from "date-fns"
+import { Checkbox } from "@/components/ui/checkbox"
+import { SubmissionRow } from "@/components/form/accionestable/SubmissionRow"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card" // Asegúrate de importar Card
 
 async function FormDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params;
-
-  // 2. Obtener el usuario DENTRO del componente.
-  const user = await currentUser();
+  const { id } = params
+  const user = await currentUser()
   if (!user) {
-    // 3. Comprobar si el usuario existe y redirigir si no.
-    redirect("/sign-in");
+    redirect("/sign-in")
   }
-  // 4. Usar el 'id' del usuario obtenido para llamar a GetFormById.
-  const form = await GetFormById(Number(id), user.id);
-
+  const form = await GetFormById(Number(id), user.id)
   if (!form) {
-    throw new Error("Form no encontrado");
+    throw new Error("Form no encontrado")
   }
 
-  // Obtiene el total de visitas y envíos, asignando 0 si no hay datos
-  const { visits, submissions } = form;
-
-  // Calcula la tasa de envíos
-  let submissionRate = 0;
-
+  const { visits, submissions } = form
+  let submissionRate = 0
   if (visits > 0) {
-    submissionRate = (submissions / visits) * 100;
+    submissionRate = (submissions / visits) * 100
   }
-
-  // Calcula la tasa de rebote
-  const bounceRate = 100 - submissionRate;
+  const bounceRate = 100 - submissionRate // Calcula la tasa de rebote
 
   return (
-    <>
-      <div className="py-10  border-b border-muted">
-        <div className="flex justify-between container">
-          <h1 className="text-4xl font-bold truncate">{form.name}</h1>
-          <VisitBtn shareURL={form.shareURL} />
+    <div className="flex flex-col flex-grow bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+      <div className="container max-w-7xl mx-auto py-8 px-4">
+        {/* Sección de Encabezado del Formulario */}
+        <Card className="mb-8 border-t-4 border-t-blue-500 shadow-lg w-full">
+        <CardHeader>
+            <div className="flex justify-between items-center mb-2">
+              {" "}
+              {/* Contenedor para el título y el botón */}
+              <CardTitle className="text-4xl font-bold truncate" title={form.name}>
+                {form.name}
+              </CardTitle>
+              <VisitBtn shareURL={form.shareURL} />
+            </div>
+            <CardDescription className="text-muted-foreground">
+              {form.description || "No hay descripción para este formulario."}
+            </CardDescription>{" "}
+            {/* Descripción del formulario */}
+          </CardHeader>
+        </Card>
+        {/* Sección de Compartir Enlace */}
+        <Card className="mb-8 shadow-md w-full">
+          <CardContent className="p-4">
+            <FormLinkShare shareURL={form.shareURL} />
+          </CardContent>
+        </Card>
+        {/* Sección de Tarjetas de Estadísticas */}
+        <div className="w-full pt-4 gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+          <StatsCard
+            title="Total visitas"
+            icon={<BookText className="text-blue-600" />}
+            helperText="Todas las visitas"
+            value={visits.toLocaleString() || ""}
+            loading={false}
+            className="shadow-sm hover:shadow-md transition-shadow"
+          />
+          <StatsCard
+            title="Total envíos"
+            icon={<CirclePlus className="text-yellow-600" />}
+            helperText="Todos los envíos"
+            value={submissions.toLocaleString() || ""}
+            loading={false}
+            className="shadow-sm hover:shadow-md transition-shadow"
+          />
+          <StatsCard
+            title="Tasa de envíos"
+            icon={<MousePointerClick className="text-green-600" />}
+            helperText="Vistas en envíos de formularios"
+            value={submissionRate.toLocaleString() + "%" || ""}
+            loading={false}
+            className="shadow-sm hover:shadow-md transition-shadow"
+          />
+          <StatsCard
+            title="Porcentaje de rebotes"
+            icon={<CirclePlus className="text-red-600" />}
+            helperText="Visitas que te dejan sin interactuar"
+            value={bounceRate.toLocaleString() + "%" || ""}
+            loading={false}
+            className="shadow-sm hover:shadow-md transition-shadow"
+          />
         </div>
-      </div>
-      <div className="py-4 border-b flex gap-2 items-center justify-between container">
-        <div className=" w-full p-2 flex gap-2 items-center justify-between">
-          <FormLinkShare shareURL={form.shareURL} />
-        </div>
-      </div>
-      <div
-        className="w-full pt-8 gap-4 grid grid-cols-1 md:grid-cols-2 
-        lg:grid-cols-4 p-2"
-      >
-        <StatsCard
-          title="Total visitas"
-          icon={<BookText className="text-blue-600" />}
-          helperText="Todas las visitas"
-          value={visits.toLocaleString() || ""}
-          loading={false}
-          className="shadow-md shadow-blue-600"
-        />
+        {/* Sección de Tabla de Envíos */}
+        <Card className="mt-8 shadow-lg w-full">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold">Envíos</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <SubmissionsTable id={form.id} />
+          </CardContent>
+        </Card>
 
-        <StatsCard
-          title="Total envíos"
-          icon={<CirclePlus className="text-yellow-600" />}
-          helperText="Todos los envíos"
-          value={submissions.toLocaleString() || ""}
-          loading={false}
-          className="shadow-md shadow-yellow-600"
-        />
+        {/* Nuevo Apartado: Gráfica General */}
+        <Card className="mt-8 shadow-lg w-full">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold">Gráfica General</CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            {/* Placeholder para la gráfica general */}
+            <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center text-muted-foreground border border-dashed">
+              {"{"} Aquí irá tu gráfica general {"}"}
+            </div>
+          </CardContent>
+        </Card>
 
-        <StatsCard
-          title="Tasa de envíos"
-          icon={<MousePointerClick className="text-green-600" />}
-          helperText="Vistas en envíos de formularios"
-          value={submissionRate.toLocaleString() + "%" || ""}
-          loading={false}
-          className="shadow-md shadow-green-600"
-        />
+        {/* Nuevo Apartado: Gráficas por Grupo Etario */}
+        <Card className="mt-8 shadow-lg w-full mb-8">
+          {" "}
+          {/* Añade mb-8 para el margen inferior */}
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold">Gráficas por Grupo Etario</CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Gráfica para niños entre 3-4 */}
+            <Card className="shadow-sm border-t-2 border-t-blue-400">
+              <CardHeader>
+                <CardTitle className="text-lg">Niños 3-4 años</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="w-full h-48 bg-blue-50 rounded-lg flex items-center justify-center text-muted-foreground border border-dashed">
+                  {"{"} Gráfica 3-4 años {"}"}
+                </div>
+              </CardContent>
+            </Card>
 
-        <StatsCard
-          title="Porcentaje de rebotes"
-          icon={<CirclePlus className="text-red-600" />}
-          helperText="Visitas que te dejan sin interactuar"
-          value={submissionRate.toLocaleString() + "%" || ""}
-          loading={false}
-          className="shadow-md shadow-red-600"
-        />
+            {/* Gráfica para niños entre 4-5 */}
+            <Card className="shadow-sm border-t-2 border-t-green-400">
+              <CardHeader>
+                <CardTitle className="text-lg">Niños 4-5 años</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="w-full h-48 bg-green-50 rounded-lg flex items-center justify-center text-muted-foreground border border-dashed">
+                  {"{"} Gráfica 4-5 años {"}"}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Gráfica para niños entre 5-6 */}
+            <Card className="shadow-sm border-t-2 border-t-purple-400">
+              <CardHeader>
+                <CardTitle className="text-lg">Niños 5-6 años</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="w-full h-48 bg-purple-50 rounded-lg flex items-center justify-center text-muted-foreground border border-dashed">
+                  {"{"} Gráfica 5-6 años {"}"}
+                </div>
+              </CardContent>
+            </Card>
+          </CardContent>
+        </Card>
       </div>
-
-      <div className="container p-10">
-        <SubmissionsTable id={form.id} />
-      </div>
-    </>
-  );
+    </div>
+  )
 }
 
-export default FormDetailPage;
+export default FormDetailPage
 
 type Rows = {
-  id: number; // Asegúrate de incluir id
-  submittedAt: Date; // Asegúrate de incluir submittedAt
-  [key: string]: string | number | Date; // Otras propiedades pueden ser string, number o Date
-};
+  id: number
+  submittedAt: Date
+  [key: string]: string | number | Date
+}
 
 async function SubmissionsTable({ id }: { id: number }) {
-  const form = await GetFormWithSubmissions(id);
-
+  const form = await GetFormWithSubmissions(id)
   if (!form) {
-    throw new Error("Form no encontrado");
+    throw new Error("Form no encontrado")
   }
 
-  // --- INICIO DE LA CORRECCIÓN ---
-
-  // 1. Manejar de forma segura el parseo del contenido del formulario
-  let formContent: FormElementInstance[] = [];
+  let formContent: FormElementInstance[] = []
   try {
-    // Aseguramos que form.content exista y no sea una cadena vacía antes de parsear
     if (form.content) {
-      formContent = JSON.parse(form.content) as FormElementInstance[];
+      formContent = JSON.parse(form.content) as FormElementInstance[]
     }
   } catch (error) {
-    console.error(`Error al parsear el contenido del formulario ${form.id}:`, error);
-    // Si falla, formContent se queda como un array vacío para no romper la UI
+    console.error(`Error al parsear el contenido del formulario ${form.id}:`, error)
   }
 
   const columns: {
-    id: string;
-    label: string;
-    required: boolean;
-    type: ElementsType;
-  }[] = [];
-
+    id: string
+    label: string
+    required: boolean
+    type: ElementsType
+  }[] = []
   formContent.forEach((element) => {
     switch (element.type) {
       case "TextField":
@@ -168,39 +210,33 @@ async function SubmissionsTable({ id }: { id: number }) {
           label: element.extraAttributes?.label,
           required: element.extraAttributes?.required,
           type: element.type,
-        });
-        break;
+        })
+        break
       default:
-        break;
+        break
     }
-  });
+  })
 
-  const rows: Rows[] = [];
+  const rows: Rows[] = []
   form.FormSubmissions.forEach((submission) => {
-    // 2. Manejar de forma segura el parseo de cada envío (submission)
-    let content = {};
+    let content = {}
     try {
       if (submission.content) {
-        content = JSON.parse(submission.content);
+        content = JSON.parse(submission.content)
       }
     } catch (error) {
-      console.error(`Error al parsear el contenido de la submission ${submission.id}:`, error);
-      // Si falla, el contenido de esta fila estará vacío, pero la página no se romperá
+      console.error(`Error al parsear el contenido de la submission ${submission.id}:`, error)
     }
-
     rows.push({
-      id: submission.id, // Añadido para asegurar que `key` en el map funcione
+      id: submission.id,
       ...content,
       submittedAt: submission.createdAt,
-    });
-  });
-
-  // --- FIN DE LA CORRECCIÓN ---
+    })
+  })
 
   return (
     <>
-      <h1 className="text-2xl font-bold my-4"> Enviados</h1>
-      <div className="rounded-md">
+      <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
@@ -209,46 +245,19 @@ async function SubmissionsTable({ id }: { id: number }) {
                   {column.label}
                 </TableHead>
               ))}
-
-              <TableHead className="text-muted-foreground text-right uppercase">
-                Enviado hace
-              </TableHead>
+              <TableHead className="text-muted-foreground text-right uppercase">Enviado hace</TableHead>
               <TableHead className="uppercase">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {rows.map((row, index) => (
-              <SubmissionRow
-                key={row.id} // Usa row.id en lugar de index si está disponible
-                row={row}
-                columns={columns}
-                formContent={formContent}
-                formId={id}
-              />
+            {rows.map((row) => (
+              <SubmissionRow key={row.id} row={row} columns={columns} formContent={formContent} formId={id} />
             ))}
           </TableBody>
         </Table>
       </div>
     </>
-  );
+  )
 }
 
-function RowCell({ type, value }: { type: ElementsType; value: string }) {
-  let node: ReactNode = value;
 
-  switch (type) {
-    case "DateFíeld":
-      if (!value) break;
-      const date = new Date(value);
-      node = <Badge variant="outline">{format(date, "dd/MM/yyyy")}</Badge>;
-      break;
-    case "CheckboxField":
-      const cheked = value === "true" ? true : false;
-      node = <Checkbox checked={cheked} disabled />;
-      break;
-    default:
-      break;
-  }
-
-  return <TableCell>{node}</TableCell>;
-}

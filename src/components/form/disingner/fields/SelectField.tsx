@@ -35,7 +35,7 @@ const extraAttributes = {
   helperText: "",
   required: false,
   placeHolder: "Escriba aqui...",
-  options: [],
+  options: ["0","1","2"],
 
 };
 

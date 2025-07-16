@@ -28,18 +28,18 @@ const type: ElementsType = "TextAreaField";
 
 const extraAttributes = {
   label: "Area de texto",
-  helperText: "Helper text",
+  helperText: "",
   required: false,
   placeHolder: "Escriba aqui...",
   rows: 3,
 };
 
 const propiertiesSchema = z.object({
-  label: z.string().min(2).max(50),
+  label: z.string().min(2).max(200),
   helperText: z.string().max(200),
   required: z.boolean().default(false),
-  placeHolder: z.string().max(50),
-  rows: z.number().min(1).max(10),
+  placeHolder: z.string().max(200),
+  rows: z.number().min(1).max(200),
 });
 
 export const TextAreaFormElement: FormElement = {
