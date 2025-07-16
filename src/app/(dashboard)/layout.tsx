@@ -1,7 +1,7 @@
-import Logo from "@/components/form/Logo";
-import ThemeSwitcher from "@/components/form/ThemeSwitcher";
-import { UserButton } from "@clerk/nextjs";
-import React, { ReactNode } from "react";
+import Logo from "@/components/form/Logo"
+import ThemeSwitcher from "@/components/form/ThemeSwitcher"
+import { UserButton } from "@clerk/nextjs"
+import type { ReactNode } from "react"
 
 function layout({ children }: { children: ReactNode }) {
   return (
@@ -15,7 +15,7 @@ function layout({ children }: { children: ReactNode }) {
       </nav>
       <main className="flex w-full flex-grow"> {children}</main>
     </div>
-  );
+  )
 }
 
-export default layout;
+export default layout

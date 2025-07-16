@@ -1,10 +1,13 @@
-import Link from 'next/link'
-import React from 'react'
+import Link from "next/link"
 
 function Logo() {
   return (
-    <Link href={"/"} className='font-bold text-3xl bg-gradient-to-r from-indigo-400 to-cyan-400 text-transparent
-    bg-clip-text hover:cursor-pointer '>Tecnoform</Link>
+    <Link
+      href={"/"}
+      className="font-extrabold text-3xl text-foreground hover:opacity-80 transition-opacity" // Cambios aquí: color sólido y efecto hover
+    >
+      Tecnoform
+    </Link>
   )
 }
 

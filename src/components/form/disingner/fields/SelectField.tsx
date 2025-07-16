@@ -32,7 +32,7 @@ const type: ElementsType = "SelectField";
 
 const extraAttributes = {
   label: "Campo de lista",
-  helperText: "Helper text",
+  helperText: "",
   required: false,
   placeHolder: "Escriba aqui...",
   options: [],
@@ -40,10 +40,10 @@ const extraAttributes = {
 };
 
 const propiertiesSchema = z.object({
-  label: z.string().min(2).max(50),
+  label: z.string().min(2).max(400),
   helperText: z.string().max(200),
   required: z.boolean().default(false),
-  placeHolder: z.string().max(50),
+  placeHolder: z.string().max(100),
   options: z.array(z.string()).default([]),
 });
 
@@ -329,7 +329,7 @@ function FormComponent({
   return (
     <Card className="hover:shadow-lg transition-shadow">
       <CardHeader>
-        <CardTitle className={cn("text-lg text-gray-800 leading-relaxed", error && "text-red-500")}>
+        <CardTitle className={cn("text-base text-gray-800 leading-relaxed", error && "text-red-500")}>
           {element.extraAttributes.label}
           {element.extraAttributes.required && "*"}
         </CardTitle>

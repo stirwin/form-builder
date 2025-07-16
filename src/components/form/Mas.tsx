@@ -42,7 +42,7 @@ export function Mas({ formId, initialName = '', initialDescription = '', showOnl
           title: "Formulario duplicado",
           description: "El formulario ha sido duplicado con éxito.",
         });
-        router.push(`/formularios/builder/${newForm.id}`);
+        router.push(`/builder/${newForm.id}`);
       } catch (error) {
         toast({
           title: "Error",
