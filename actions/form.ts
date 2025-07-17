@@ -111,6 +111,9 @@ export async function GetFormById(id: number, userId: string) {
       userId: userId, // Usa el userId que pasaste como parámetro
       id: id,
     },
+    include: {
+      FormSubmissions: true,
+    }
   });
 }
 
@@ -195,7 +198,8 @@ export async function GetFormWithSubmissions (id: number) {
       id
     },
     include: {
-      FormSubmissions: true
+      FormSubmissions: true,
+      
     }
   })
 }

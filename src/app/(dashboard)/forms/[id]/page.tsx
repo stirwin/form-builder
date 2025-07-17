@@ -1,6 +1,5 @@
 export const dynamic = "force-dynamic"
 
-import type { ReactNode } from "react"
 import { GetFormById, GetFormWithSubmissions } from "../../../../../actions/form"
 import VisitBtn from "@/components/form/forms/VisitBtn"
 import FormLinkShare from "@/components/form/forms/FormLinkShare"
@@ -10,11 +9,68 @@ import type { ElementsType, FormElementInstance } from "@/components/form/dising
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { currentUser } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
-import { Badge } from "@/components/ui/badge"
-import { format } from "date-fns"
-import { Checkbox } from "@/components/ui/checkbox"
 import { SubmissionRow } from "@/components/form/accionestable/SubmissionRow"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card" // Asegúrate de importar Card
+import { FormResponsesChart } from "@/components/charts/FormResponsesChart";
+
+
+
+// Función para procesar las respuestas del formulario
+
+function processFormResponses(submissions: any[], formContent: any[]) {
+  if (!formContent || !Array.isArray(formContent)) {
+    console.error("Form content no es un array o está vacío");
+    return [];
+  }
+
+  // Filtrar solo los campos Select con opciones numéricas
+  const numericFields = formContent.filter(field => {
+    if (!field) return false;
+    const isSelectField = field.type === "SelectField";
+    const hasNumericOptions = field.extraAttributes?.options?.some(
+      (opt: string) => !isNaN(Number(opt))
+    );
+    return isSelectField && hasNumericOptions;
+  });
+
+  if (numericFields.length === 0) {
+    console.log("No se encontraron campos numéricos");
+    return [];
+  }
+
+  // Procesar las respuestas
+  const fieldStats = numericFields.map(field => {
+    const responses = submissions
+      .map(sub => {
+        try {
+          const content = typeof sub.content === 'string' 
+            ? JSON.parse(sub.content) 
+            : sub.content;
+          const value = content[field.id];
+          const numValue = Number(value);
+          return isNaN(numValue) ? null : numValue;
+        } catch (error) {
+          console.error("Error procesando respuesta:", error);
+          return null;
+        }
+      })
+      .filter((val): val is number => val !== null);
+
+    const totalResponses = responses.length;
+    const average = totalResponses > 0 
+      ? responses.reduce((sum, val) => sum + val, 0) / totalResponses 
+      : 0;
+
+    return {
+      id: field.id,
+      name: field.extraAttributes?.label || `Pregunta ${field.id.substring(0, 4)}`,
+      average,
+      totalResponses
+    };
+  });
+
+  return fieldStats;
+}
 
 async function FormDetailPage({ params }: { params: { id: string } }) {
   const { id } = params
@@ -34,6 +90,15 @@ async function FormDetailPage({ params }: { params: { id: string } }) {
   }
   const bounceRate = 100 - submissionRate // Calcula la tasa de rebote
 
+  // Procesar los datos para la gráfica
+  const chartData = processFormResponses(
+   form.FormSubmissions || [], // Asegúrate de que esto sea un array
+    form.content ? JSON.parse(form.content) : []
+  );
+  
+  console.log("Datos para la gráfica:", chartData);
+  
+  
   return (
     <div className="flex flex-col flex-grow bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
       <div className="container max-w-7xl mx-auto py-8 px-4">
@@ -108,13 +173,11 @@ async function FormDetailPage({ params }: { params: { id: string } }) {
         {/* Nuevo Apartado: Gráfica General */}
         <Card className="mt-8 shadow-lg w-full">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold">Gráfica General</CardTitle>
+            <CardTitle className="text-2xl font-bold">Promedio de respuestas</CardTitle>
           </CardHeader>
           <CardContent className="p-6">
             {/* Placeholder para la gráfica general */}
-            <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center text-muted-foreground border border-dashed">
-              {"{"} Aquí irá tu gráfica general {"}"}
-            </div>
+            <FormResponsesChart data={chartData} />
           </CardContent>
         </Card>
 

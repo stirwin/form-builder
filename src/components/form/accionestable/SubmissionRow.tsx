@@ -51,24 +51,24 @@ export function SubmissionRow({ row, columns, formContent, formId }: SubmissionR
     }
   };
 
-  const handleUpdate = async (updatedContent: { formValues: Record<string, any>; totals: Record<string, number> }) => {
-    try {
-      // Enviamos directamente los formValues, no como un objeto anidado
-      await UpdateSubmission(formId, row.id, updatedContent.formValues);
-      toast({
-        title: "Datos actualizados.",
-        description: "Los datos se han actualizado correctamente.",
-      });
-      router.refresh();
-    } catch (error) {
-      console.error("Error al actualizar la submission:", error);
-      toast({
-        title: "Error",
-        description: "Hubo un problema al actualizar los datos.",
-        variant: "destructive",
-      });
-    }
-  };
+ // En SubmissionRow.tsx
+const handleUpdate = async (updatedValues: Record<string, any>) => {
+  try {
+    await UpdateSubmission(formId, row.id, updatedValues);
+    toast({
+      title: "¡Guardado!",
+      description: "Los cambios se han guardado correctamente.",
+    });
+    router.refresh();
+  } catch (error) {
+    console.error("Error al actualizar la submission:", error);
+    toast({
+      title: "Error",
+      description: "Hubo un problema al guardar los cambios.",
+      variant: "destructive",
+    });
+  }
+};
 
 
   return (
@@ -92,7 +92,6 @@ export function SubmissionRow({ row, columns, formContent, formId }: SubmissionR
           columns={columns}
           formContent={formContent}
           onSubmit={handleUpdate} // Llamar a la función para actualizar datos
-          existingTotals={row.totals || {}} // Pasamos los `totals` existentes o un objeto vacío si no exist
        />
         <EliminarButton
           submissionId={row.id}
